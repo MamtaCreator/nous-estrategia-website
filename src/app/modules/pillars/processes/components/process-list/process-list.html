@@ -1,0 +1,96 @@
+<app-pillar-nav [clientId]="clientId" />
+<div class="header">
+  <div>
+    <a class="back" [routerLink]="['/app/clients', clientId]">← Back to client</a>
+    <h1>Process flows</h1>
+  </div>
+  @if (canWrite()) {
+    <button type="button" class="btn primary" (click)="showForm.set(!showForm())">
+      {{ showForm() ? 'Cancel' : '+ New process' }}
+    </button>
+  }
+</div>
+
+<div class="pillar-filters">
+  <label>Search by name <input #searchInput type="search" [value]="search()" (input)="search.set(searchInput.value)" /></label>
+  <label>Status <select #statusInput [value]="statusFilter()" (change)="statusFilter.set(statusInput.value)"><option value="">All statuses</option>@for (status of statuses; track status) { <option [value]="status">{{ status }}</option> }</select></label>
+  <button type="button" (click)="search.set(''); statusFilter.set('')">Clear filters</button>
+  <button type="button" (click)="load()" [disabled]="isLoading()">Refresh</button>
+  <button type="button" (click)="exportReport()" [disabled]="isLoading() || loadFailed() || !filtered().length">Export CSV</button>
+</div>
+@if (!isLoading() && !loadFailed()) {
+  <app-pillar-kpis [metrics]="metrics()" />
+  <app-pillar-chart title="Process efficiency" [labels]="chartLabels()" [series]="chartSeries()" unit="%" />
+}
+
+@if (showForm()) {
+  <form class="form-card" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <app-form-errors [form]="form" />
+    <div class="grid">
+      <label class="span-2">
+        <span>Name</span>
+        <input type="text" formControlName="name" />
+      </label>
+      <label>
+        <span>Category</span>
+        <input type="text" formControlName="category" placeholder="Sales" />
+      </label>
+      <label class="span-2">
+        <span>Description</span>
+        <textarea formControlName="description" rows="2"></textarea>
+      </label>
+    </div>
+
+    <h3>Steps</h3>
+    <div class="steps" formArrayName="steps">
+      @for (step of steps.controls; track step; let i = $index) {
+        <div class="step-row" [formGroupName]="i">
+          <span class="seq">{{ i + 1 }}</span>
+          <input type="text" aria-label="Step name" formControlName="name" placeholder="Step name" class="step-name" />
+          <input type="text" aria-label="Step owner" formControlName="owner" placeholder="Owner (optional)" class="step-owner" />
+          <input type="number" aria-label="Step duration in minutes" formControlName="durationMinutes" placeholder="Minutes" min="0" class="step-num" />
+          <input type="number" aria-label="Step cost" formControlName="costPerExecution" placeholder="Cost" min="0" class="step-num" />
+          <button type="button" (click)="moveStep(i, -1)" [disabled]="i === 0" aria-label="Move step up">?</button>
+          <button type="button" (click)="moveStep(i, 1)" [disabled]="i === steps.length - 1" aria-label="Move step down">?</button>
+          <button type="button" class="remove" (click)="removeStep(i)" [disabled]="steps.length <= 1">✕</button>
+        </div>
+      }
+    </div>
+    <button type="button" class="btn small" (click)="addStep()">+ Add step</button>
+
+    <div class="footer">
+      <button type="submit" [disabled]="isSaving()">{{ isSaving() ? 'Saving…' : 'Create' }}</button>
+    </div>
+  </form>
+}
+
+@if (isLoading()) {
+  <p class="hint">Loading…</p>
+} @else if (loadFailed()) {
+  <p role="alert">Could not load this pillar. <button type="button" (click)="load()">Try again</button></p>
+} @else if (filtered().length === 0) {
+  <p class="hint">No processes match this selection.</p>
+} @else {
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Status</th>
+        <th>Efficiency</th>
+        <th>Bottlenecks</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (process of filtered(); track process.id) {
+        <tr [routerLink]="['/app/clients', clientId, 'processes', process.id]">
+          <td class="name"><a [routerLink]="['/app/clients', clientId, 'processes', process.id]">{{ process.name }}</a></td>
+          <td>{{ process.category }}</td>
+          <td><span class="status" [class]="process.status.toLowerCase()">{{ process.status }}</span></td>
+          <td>{{ process.efficiency }}%</td>
+          <td>{{ process.bottleneckCount }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

@@ -1,0 +1,85 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.header a {
+  color: #2b5fb0;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.hint {
+  color: #666;
+}
+
+.form-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 680px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.span-2 {
+  grid-column: span 2;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+  padding: 9px 11px;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  font-weight: 400;
+  resize: vertical;
+}
+
+input[readonly] {
+  background: #f4f6fb;
+  color: #888;
+}
+
+.footer {
+  margin-top: 24px;
+}
+
+.footer button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  background: #2b5fb0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.footer button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

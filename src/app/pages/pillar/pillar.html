@@ -1,0 +1,72 @@
+@if (pillar(); as p) {
+  @if (copy(); as c) {
+  <section class="pillar-hero">
+    <div class="inner">
+      <a class="back-link" routerLink="/" fragment="services">
+        <app-icon name="arrow" [size]="15" [strokeWidth]="1.8" />
+        <span>{{ i18n.t('pillar.allServices') }}</span>
+      </a>
+      <p class="kicker" [style.color]="p.color">{{ c.kicker }}</p>
+      <h1 class="h1 h1-pillar">{{ c.title }}</h1>
+      <p class="hero-sub hero-sub-dark">{{ c.sub }}</p>
+      <a class="btn btn-primary" [href]="'mailto:' + contact.email">{{ i18n.t('nav.consult') }}</a>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="inner">
+      <div class="grid grid-2">
+        @for (card of c.cards; track card[0]) {
+          <article class="detail-card">
+            <span class="detail-icon" [style.color]="p.color">
+              <app-icon name="check" [size]="20" [color]="p.color" [strokeWidth]="1.8" />
+            </span>
+            <h3 class="card-title">{{ card[0] }}</h3>
+            <p class="card-body">{{ card[1] }}</p>
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="band alt">
+    <div class="inner duo">
+      <div class="duo-media">
+        @if (p.media.type === 'video') {
+          <div class="img-real vid-real ph-band">
+            <video appAutoplay autoplay muted loop playsinline preload="metadata" [attr.poster]="p.media.poster">
+              <source [src]="p.media.src" type="video/mp4">
+            </video>
+          </div>
+        } @else {
+          <div class="img-real ph-band">
+            <img [src]="p.media.src" [alt]="c.alt ?? ''" loading="lazy">
+          </div>
+        }
+      </div>
+      <div class="duo-copy">
+        <p class="kicker">{{ i18n.t('pillar.approach') }}</p>
+        <h2 class="h2">{{ i18n.t('pillar.approachTitle') }}</h2>
+        <p class="lede">{{ i18n.t('about.lede') }}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="inner">
+      <p class="kicker">{{ i18n.t('pillar.others') }}</p>
+      <div class="rel-grid">
+        @for (o of others(); track o.slug) {
+          <a class="rel-tile" [routerLink]="['/', o.slug]">
+            <span class="tile-icon" [style.color]="o.color"><app-icon [name]="o.icon" [size]="22" /></span>
+            <span class="rel-title">{{ i18n.t('tiles.' + o.slug + '.title') }}</span>
+            <app-icon name="arrow" [size]="15" />
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+
+  <app-cta-section />
+  }
+}

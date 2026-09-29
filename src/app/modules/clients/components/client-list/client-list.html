@@ -1,0 +1,54 @@
+<div class="header">
+  <h1>Clients</h1>
+  @if (canWrite()) {
+    <a class="btn primary" routerLink="/app/clients/new">+ New client</a>
+  }
+</div>
+
+@if (isLoading()) {
+  <p class="hint">Loading…</p>
+} @else if (loadFailed()) {
+  <p role="alert">Clients could not be loaded. <button type="button" (click)="load()">Try again</button></p>
+} @else if (clientService.clients().length === 0) {
+  <p class="hint">No clients yet.</p>
+} @else {
+  <table>
+    <thead>
+      <tr>
+        <th>Company</th>
+        <th>Industry</th>
+        <th>Country</th>
+        <th>Tier</th>
+        <th>Status</th>
+        <th>Projects</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (client of clientService.clients(); track client.id) {
+        <tr>
+          <td><a [routerLink]="['/app/clients', client.id]">{{ client.companyName }}</a></td>
+          <td>{{ client.industry }}</td>
+          <td>{{ client.country }}</td>
+          <td>{{ client.subscriptionTier }}</td>
+          <td><span class="status" [class]="client.status.toLowerCase()">{{ client.status }}</span></td>
+          <td>{{ client.projectCount }}</td>
+          <td class="actions">
+            @if (canWrite()) {
+              <a [routerLink]="['/app/clients', client.id, 'edit']">Edit</a>
+            }
+            @if (canDelete()) {
+              <button type="button" (click)="deleteClient(client.id, client.companyName)">Delete</button>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  @if (clientService.pagination(); as pagination) {
+    <mat-paginator [length]="pagination.total" [pageIndex]="page() - 1" [pageSize]="limit()"
+      [pageSizeOptions]="[5, 10, 20, 25, 50]" [disabled]="isLoading()" (page)="onPageChange($event)"
+      aria-label="Client pages" showFirstLastButtons />
+  }
+}

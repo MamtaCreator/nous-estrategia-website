@@ -1,0 +1,160 @@
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #2b5fb0;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #d0d5dd;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: #2b5fb0;
+  color: #fff;
+  border-color: #2b5fb0;
+}
+
+.hint {
+  color: #666;
+}
+
+.form-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.span-2 {
+  grid-column: span 2;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+  padding: 9px 11px;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  font-weight: 400;
+  resize: vertical;
+}
+
+.footer {
+  margin-top: 18px;
+}
+
+.footer button {
+  padding: 9px 18px;
+  border: none;
+  border-radius: 6px;
+  background: #2b5fb0;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.footer button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+th,
+td {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  background: #f4f6fb;
+  font-weight: 600;
+  color: #444;
+}
+
+tbody tr {
+  cursor: pointer;
+}
+
+tbody tr:hover {
+  background: #f8f9fc;
+}
+
+.name {
+  font-weight: 600;
+  color: #2b5fb0;
+}
+
+.status {
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status.draft {
+  background: #f4f6fb;
+  color: #666;
+}
+
+.status.testing {
+  background: #fff2d9;
+  color: #b8790b;
+}
+
+.status.active {
+  background: #e3f4e8;
+  color: #1e8e4a;
+}
+
+.status.disabled {
+  background: #fdeaea;
+  color: #c62828;
+}

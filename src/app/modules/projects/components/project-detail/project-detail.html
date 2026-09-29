@@ -1,0 +1,127 @@
+<a class="back" [routerLink]="['/app/clients', clientId, 'projects']">← Back to projects</a>
+
+@if (isLoading()) {
+  <p class="hint">Loading…</p>
+} @else if (projectService.selectedProject(); as project) {
+  <div class="header">
+    <div>
+      <h1>{{ project.name }}</h1>
+      <p class="subtitle">
+        {{ project.pillar }} · <span class="status" [class]="project.status.toLowerCase()">{{ project.status }}</span>
+      </p>
+    </div>
+    <div class="actions">
+      @if (canWrite() && !isReadOnly()) {
+        <a class="btn" [routerLink]="['/app/clients', clientId, 'projects', project.id, 'edit']">Edit</a>
+      }
+      @if (canDelete()) {
+        <button type="button" class="btn danger" (click)="deleteProject()">Delete</button>
+      }
+    </div>
+  </div>
+
+  @if (isReadOnly()) {
+    <p class="notice">This project is {{ project.status }} and is read-only.</p>
+  }
+
+  @if (canWrite() && allowedTransitions().length > 0) {
+    <div class="transitions">
+      <span>Move to:</span>
+      @for (status of allowedTransitions(); track status) {
+        <button type="button" (click)="changeStatus(status)" [disabled]="isChangingStatus()">{{ status }}</button>
+      }
+    </div>
+  }
+
+  <div class="cards">
+    <div class="card">
+      <h3>Overview</h3>
+      <dl>
+        <dt>Description</dt>
+        <dd>{{ project.description || '—' }}</dd>
+        <dt>Budget</dt>
+        <dd>{{ project.budget !== null ? ('$' + project.budget) : '—' }}</dd>
+        <dt>Dates</dt>
+        <dd>{{ project.startDate | slice: 0 : 10 }} → {{ project.endDate | slice: 0 : 10 }}</dd>
+        <dt>Progress</dt>
+        <dd>
+          <div class="progress-bar"><div class="fill" [style.width.%]="project.progress"></div></div>
+          {{ project.progress }}%
+        </dd>
+        <dt>Team</dt>
+        <dd>{{ project.teamMemberIds.length === 0 ? '—' : project.teamMemberIds.join(', ') }}</dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Deliverables ({{ project.deliverables.length }})</h3>
+        @if (canWrite() && !isReadOnly() && !isAddingDeliverable()) {
+          <button type="button" class="btn small" (click)="startAddDeliverable()">+ Add</button>
+        }
+      </div>
+
+      @if (isAddingDeliverable()) {
+        <form class="deliverable-form" [formGroup]="deliverableForm" (ngSubmit)="saveDeliverable()">
+          <label>
+            <span>Name</span>
+            <input type="text" formControlName="name" />
+          </label>
+          <label>
+            <span>Description</span>
+            <textarea formControlName="description" rows="2"></textarea>
+          </label>
+          <div class="row">
+            <label>
+              <span>Due date</span>
+              <input type="date" formControlName="dueDate" />
+            </label>
+            <label>
+              <span>Status</span>
+              <select formControlName="status">
+                @for (status of deliverableStatuses; track status) {
+                  <option [value]="status">{{ status }}</option>
+                }
+              </select>
+            </label>
+          </div>
+          <label>
+            <span>Assignee ID (must be on the team, optional)</span>
+            <input type="text" formControlName="assigneeId" placeholder="guid" />
+          </label>
+          <div class="deliverable-form-actions">
+            <button type="submit" [disabled]="isSavingDeliverable()">
+              {{ isSavingDeliverable() ? 'Saving…' : 'Save' }}
+            </button>
+            <button type="button" class="btn" (click)="cancelDeliverableForm()">Cancel</button>
+          </div>
+        </form>
+      }
+
+      @if (project.deliverables.length === 0) {
+        <p class="hint">No deliverables yet.</p>
+      } @else {
+        <ul class="deliverables">
+          @for (deliverable of project.deliverables; track deliverable.id) {
+            <li>
+              <div class="deliverable-info">
+                <span class="deliverable-name" [class.overdue]="deliverable.isOverdue">{{ deliverable.name }}</span>
+                <span class="status small" [class]="deliverable.status.toLowerCase()">{{ deliverable.status }}</span>
+                @if (deliverable.isOverdue) {
+                  <span class="overdue-badge">Overdue</span>
+                }
+                <span class="deliverable-due">Due {{ deliverable.dueDate | slice: 0 : 10 }}</span>
+              </div>
+              @if (canWrite() && !isReadOnly()) {
+                <div class="deliverable-actions">
+                  <button type="button" (click)="startEditDeliverable(deliverable.id)">Edit</button>
+                  <button type="button" class="danger" (click)="deleteDeliverable(deliverable.id, deliverable.name)">Delete</button>
+                </div>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </div>
+}

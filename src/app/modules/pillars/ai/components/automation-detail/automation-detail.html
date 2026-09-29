@@ -1,0 +1,109 @@
+<app-pillar-nav [clientId]="clientId" />
+<a class="back" [routerLink]="['/app/clients', clientId, 'automations']">← Back to automations</a>
+
+<div class="pillar-filters">
+  <button type="button" (click)="load()" [disabled]="isLoading() || isBusy()">Refresh</button>
+  <label><input type="checkbox" [checked]="autoRefresh()" (change)="autoRefresh.set(!autoRefresh())" /> Refresh every 30 seconds</label>
+  <label>Execution result <select #resultFilter (change)="executionFilter.set(resultFilter.value)"><option value="">All results</option><option value="success">Succeeded</option><option value="failed">Failed</option></select></label>
+  <button type="button" (click)="exportExecutions()" [disabled]="executionsFailed() || !visibleExecutions().length">Export executions CSV</button>
+</div>
+@if (isLoading()) {
+  <p class="hint">Loading…</p>
+} @else if (loadFailed()) {
+  <p role="alert">This record could not be loaded. <button type="button" (click)="load()">Try again</button></p>
+} @else if (automationService.selectedAutomation(); as automation) {
+  <div class="header">
+    <div>
+      <h1>{{ automation.name }}</h1>
+      <p class="subtitle">
+        {{ automation.type }} · {{ automation.triggerType }} ·
+        <span class="status" [class]="automation.status.toLowerCase()">{{ automation.status }}</span>
+      </p>
+    </div>
+    <div class="actions">
+      @if (canWrite() && canDeploy()) {
+        <button type="button" class="btn primary" (click)="deploy()" [disabled]="isBusy()">Deploy</button>
+      }
+      @if (canWrite() && canLogExecution()) {
+        <button type="button" class="btn" (click)="showLogForm.set(!showLogForm())">
+          {{ showLogForm() ? 'Cancel' : 'Log execution' }}
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (showLogForm()) {
+    <form class="form-card" [formGroup]="logForm" (ngSubmit)="onSubmitLog()">
+    <app-form-errors [form]="logForm" />
+      <div class="grid">
+        <label class="checkbox">
+          <input type="checkbox" formControlName="success" />
+          <span>Succeeded</span>
+        </label>
+        @if (!logForm.controls.success.value) {
+          <label class="span-2">
+            <span>Error message</span>
+            <input type="text" formControlName="errorMessage" />
+          </label>
+        }
+        <label>
+          <span>Duration (seconds)</span>
+          <input type="number" formControlName="durationSeconds" min="0" />
+        </label>
+        <label>
+          <span>Time automated (minutes)</span>
+          <input type="number" formControlName="timeAutomedMinutes" min="0" />
+        </label>
+        <label>
+          <span>Cost savings</span>
+          <input type="number" formControlName="costSavings" min="0" />
+        </label>
+      </div>
+      <div class="footer">
+        <button type="submit" [disabled]="isBusy()">{{ isBusy() ? 'Saving…' : 'Save' }}</button>
+      </div>
+    </form>
+  }
+
+  @if (executionsFailed()) { <p role="alert">Execution history could not be loaded. Refresh to try again.</p> }
+  <p>Showing up to 50 recent executions. Performance totals below include all recorded runs.</p>
+  <app-pillar-kpis [metrics]="executionMetrics()" />
+  <app-pillar-chart title="Execution duration" [labels]="executionLabels()" [series]="executionSeries()" unit="s" />
+  <div class="cards">
+    <div class="card">
+      <h3>Performance</h3>
+      <dl>
+        <dt>Executions</dt>
+        <dd>{{ automation.totalExecutions }} ({{ automation.successfulExecutions }} ok / {{ automation.failedExecutions }} failed)</dd>
+        <dt>Success rate</dt>
+        <dd>{{ automation.successRate.toFixed(1) }}%</dd>
+        <dt>Time automated</dt>
+        <dd>{{ automation.totalTimeAutomedMinutes }} min</dd>
+        <dt>Cost savings</dt>
+        <dd>${{ automation.totalCostSavings }}</dd>
+        <dt>Deployed</dt>
+        <dd>{{ automation.deployedAt || 'Not deployed' }}</dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <h3>Recent executions</h3>
+      @if (visibleExecutions().length === 0) {
+        <p class="hint">No executions logged yet.</p>
+      } @else {
+        <ul class="executions">
+          @for (execution of visibleExecutions(); track execution.id) {
+            <li>
+              <span class="dot" [class.ok]="execution.success" [class.fail]="!execution.success"></span>
+              <span>{{ execution.success ? 'Succeeded' : 'Failed' }}</span><span class="ex-date">{{ execution.executedAt }}</span>
+              <span class="ex-duration">{{ execution.durationSeconds }}s</span>
+              @if (!execution.success && execution.errorMessage) {
+                <span class="ex-error">{{ execution.errorMessage }}</span>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </div>
+}

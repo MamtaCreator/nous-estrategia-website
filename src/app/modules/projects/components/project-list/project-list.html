@@ -1,0 +1,57 @@
+<div class="header">
+  <div>
+    <a class="back" [routerLink]="['/app/clients', clientId]">← Back to client</a>
+    <h1>Projects</h1>
+  </div>
+  @if (canWrite()) {
+    <a class="btn primary" [routerLink]="['/app/clients', clientId, 'projects', 'new']">+ New project</a>
+  }
+</div>
+
+<div class="filters">
+  <select (change)="onStatusChange($any($event.target).value)">
+    <option value="">All statuses</option>
+    @for (status of statuses; track status) {
+      <option [value]="status">{{ status }}</option>
+    }
+  </select>
+
+  <select (change)="onPillarChange($any($event.target).value)">
+    <option value="">All pillars</option>
+    @for (pillar of pillars; track pillar) {
+      <option [value]="pillar">{{ pillar }}</option>
+    }
+  </select>
+</div>
+
+@if (isLoading()) {
+  <p class="hint">Loading…</p>
+} @else if (projectService.projects().length === 0) {
+  <p class="hint">No projects match these filters.</p>
+} @else {
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Pillar</th>
+        <th>Status</th>
+        <th>Progress</th>
+        <th>Dates</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (project of projectService.projects(); track project.id) {
+        <tr [routerLink]="['/app/clients', clientId, 'projects', project.id]">
+          <td class="name">{{ project.name }}</td>
+          <td>{{ project.pillar }}</td>
+          <td><span class="status" [class]="project.status.toLowerCase()">{{ project.status }}</span></td>
+          <td>
+            <div class="progress-bar"><div class="fill" [style.width.%]="project.progress"></div></div>
+            <span class="progress-label">{{ project.progress }}%</span>
+          </td>
+          <td>{{ project.startDate | slice: 0 : 10 }} → {{ project.endDate | slice: 0 : 10 }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

@@ -1,0 +1,75 @@
+<div class="header">
+  <h1>{{ isEdit ? 'Edit client' : 'New client' }}</h1>
+  <a routerLink="/app/clients">← Back to clients</a>
+</div>
+
+@if (isLoading()) {
+  <p class="hint">Loading…</p>
+} @else if (loadFailed()) {
+  <p role="alert">This client could not be loaded. Return to the client list and try again.</p>
+} @else {
+  <form class="form-card" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <app-form-errors [form]="form" />
+    @if (isEdit) {
+      <p class="notice">
+        The API does not return phone, website or key-contact details for display, so please re-enter the
+        current phone number below before saving.
+      </p>
+    }
+
+    <div class="grid">
+      <label>
+        <span>Company name</span>
+        <input type="text" formControlName="companyName" />
+      </label>
+
+      <label>
+        <span>Industry</span>
+        <input type="text" formControlName="industry" placeholder="Technology" />
+      </label>
+
+      <label>
+        <span>Country</span>
+        <input type="text" formControlName="country" />
+      </label>
+
+      <label>
+        <span>Email</span>
+        <input type="email" formControlName="email" />
+      </label>
+
+      <label>
+        <span>Phone</span>
+        <input type="tel" formControlName="phone" placeholder="+15550000000" />
+      </label>
+
+      <label>
+        <span>Website (optional)</span>
+        <input type="url" formControlName="website" placeholder="https://…" />
+      </label>
+
+      <label>
+        <span>Subscription tier</span>
+        <select formControlName="subscriptionTier">
+          @for (tier of tiers; track tier) {
+            <option [value]="tier">{{ tier }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    <fieldset>
+      <legend>Active services</legend>
+      <label class="checkbox"><input type="checkbox" formControlName="finance" /> Finance</label>
+      <label class="checkbox"><input type="checkbox" formControlName="marketing" /> Marketing</label>
+      <label class="checkbox"><input type="checkbox" formControlName="processes" /> Processes</label>
+      <label class="checkbox"><input type="checkbox" formControlName="ai" /> AI automation</label>
+    </fieldset>
+
+    <div class="footer">
+      <button type="submit" [disabled]="isSaving()">
+        {{ isSaving() ? 'Saving…' : isEdit ? 'Save changes' : 'Create client' }}
+      </button>
+    </div>
+  </form>
+}

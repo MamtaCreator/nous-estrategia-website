@@ -1,0 +1,166 @@
+@for (h of heroes; track h.video) {
+  <app-hero-video [video]="h.video" [poster]="h.poster" [cue]="h.cue" />
+}
+
+<section class="band duo-band" id="about">
+  <div class="inner duo">
+    <div class="duo-copy">
+      <p class="kicker">{{ i18n.t('about.kicker') }}</p>
+      <h2 class="h2">{{ i18n.t('about.title') }}</h2>
+      <p class="lede">{{ i18n.t('about.lede') }}</p>
+      <p class="lede lede-sub">{{ i18n.t('about.sub') }}</p>
+    </div>
+    <div class="duo-media">
+      <div class="img-real vid-real ph-band">
+        <video appAutoplay autoplay muted loop playsinline preload="metadata" poster="images/about-dusk-poster2.jpg">
+          <source src="videos/about-dusk2.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="metrics-band">
+  <div class="inner">
+    <div class="metrics-row">
+      @for (m of metrics; track m.n) {
+        <div class="metric">
+          <div class="metric-bar" [style.background]="m.color"></div>
+          <div class="metric-num">{{ i18n.t('metrics.' + m.n + '.num') }}</div>
+          <div class="metric-label">{{ i18n.t('metrics.' + m.n + '.label') }}</div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="band alt" id="services">
+  <div class="inner">
+    <div class="sec-head">
+      <p class="kicker">{{ i18n.t('services.kicker') }}</p>
+      <div class="sec-head-mark">
+        <app-brain-mark [size]="46" />
+        <h2 class="h2">{{ i18n.t('services.title') }}</h2>
+      </div>
+      <p class="lede">{{ i18n.t('services.lede') }}</p>
+      <p class="lede lede-sub">{{ i18n.t('services.sub') }}</p>
+      <div class="mini-badge-row">
+        @for (t of tiles; track t.slug) {
+          <span class="mini-badge" [style.background]="t.color + '22'" [style.color]="t.color">
+            <app-icon [name]="t.icon" [size]="18" [color]="t.color" [strokeWidth]="1.7" />
+          </span>
+        }
+      </div>
+    </div>
+    <div class="tile-grid">
+      @for (t of tiles; track t.slug) {
+        <a class="tile" [class.featured]="t.featured" [routerLink]="['/', t.slug]" [id]="t.slug">
+          <span class="tile-icon" [style.color]="t.color"><app-icon [name]="t.icon" [size]="22" /></span>
+          <span class="tile-label" [style.color]="t.color">{{ i18n.t('tiles.' + t.slug + '.label') }}</span>
+          <span class="tile-title">{{ i18n.t('tiles.' + t.slug + '.title') }}</span>
+          <span class="tile-body">{{ i18n.t('tiles.' + t.slug + '.body') }}</span>
+          <span class="tile-more">{{ i18n.t('tiles.more') }}</span>
+        </a>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="band duo-band reverse" id="tech">
+  <div class="inner duo">
+    <div class="duo-copy">
+      <p class="kicker">{{ i18n.t('tech.kicker') }}</p>
+      <h2 class="h2">{{ i18n.t('tech.title') }}</h2>
+      <p class="lede">{{ i18n.t('tech.lede') }}</p>
+    </div>
+    <div class="duo-media">
+      <div class="img-real vid-real ph-band">
+        <video appAutoplay autoplay muted loop playsinline preload="metadata" poster="images/collab-poster2.jpg">
+          <source src="videos/collab-board2.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band client-band">
+  <div class="inner">
+    <div class="client-head">
+      <p class="kicker">{{ i18n.t('clients.kicker') }}</p>
+      <p class="client-note">{{ i18n.t('clients.note') }}</p>
+    </div>
+    <div class="client-grid">
+      @for (c of clientSlots; track c) {
+        <div class="client-box">{{ i18n.t('clients.logo') }}</div>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="band alt" id="insight">
+  <div class="inner duo stack">
+    <div class="duo-copy">
+      <p class="kicker">{{ i18n.t('analytics.kicker') }}</p>
+      <h2 class="h2">{{ i18n.t('analytics.title') }}</h2>
+      <p class="lede">{{ i18n.t('analytics.lede') }}</p>
+      <ul class="chip-list">
+        @for (c of analyticsChips; track c) {
+          <li class="chip">
+            <span class="chip-icon"><app-icon name="check" [size]="16" color="#2E74C9" [strokeWidth]="1.8" /></span>
+            <span>{{ i18n.t('analytics.chip' + c) }}</span>
+          </li>
+        }
+      </ul>
+      <p class="fine roadmap-note">{{ i18n.t('analytics.roadmap') }}</p>
+    </div>
+    <div class="duo-media">
+      @if (auth.isAuthenticated()) { <app-kpi-analytics /> } @else { <app-analytics-dashboard /> }
+    </div>
+  </div>
+</section>
+
+<section class="band" id="expertise">
+  <div class="inner">
+    <div class="sec-head">
+      <p class="kicker">{{ i18n.t('why.kicker') }}</p>
+      <div class="sec-head-mark">
+        <app-brain-mark [size]="46" />
+        <h2 class="h2">{{ i18n.t('why.title') }}</h2>
+      </div>
+    </div>
+    <div class="grid grid-4">
+      @for (w of why; track w.n) {
+        <article class="why-card num-card">
+          <div class="step-num" [style.color]="w.color">{{ pad(w.n) }}</div>
+          <div class="step-rule" [style.background]="w.color"></div>
+          <h3 class="card-title">{{ i18n.t('why.' + w.n + '.title') }}</h3>
+          <p class="card-body">{{ i18n.t('why.' + w.n + '.body') }}</p>
+        </article>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="band alt" id="method">
+  <div class="inner">
+    <div class="sec-head">
+      <p class="kicker">{{ i18n.t('method.kicker') }}</p>
+      <div class="sec-head-mark">
+        <app-brain-mark [size]="46" />
+        <h2 class="h2">{{ i18n.t('method.title') }}</h2>
+      </div>
+    </div>
+    <div class="grid grid-4 steps">
+      @for (w of why; track w.n) {
+        <div class="step">
+          <div class="step-num" [style.color]="w.color">{{ pad(w.n) }}</div>
+          <div class="step-rule" [style.background]="w.color"></div>
+          <h3 class="card-title">{{ i18n.t('method.' + w.n + '.title') }}</h3>
+          <p class="card-body">{{ i18n.t('method.' + w.n + '.body') }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<app-cta-section />

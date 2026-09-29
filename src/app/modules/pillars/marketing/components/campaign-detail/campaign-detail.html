@@ -1,0 +1,100 @@
+<app-pillar-nav [clientId]="clientId" />
+<a class="back" [routerLink]="['/app/clients', clientId, 'marketing']">← Back to campaigns</a>
+
+@if (isLoading()) {
+  <p class="hint">Loading…</p>
+} @else if (loadFailed()) {
+  <p role="alert">This record could not be loaded. <button type="button" (click)="load()">Try again</button></p>
+} @else if (marketing.selectedCampaign(); as campaign) {
+  <div class="header">
+    <div>
+      <h1>{{ campaign.name }}</h1>
+      <p class="subtitle">
+        {{ campaign.type }} · {{ campaign.objective }} ·
+        <span class="status" [class]="campaign.status.toLowerCase()">{{ campaign.status }}</span>
+      </p>
+    </div>
+    <div class="actions">
+      @if (canWrite() && canLaunch()) {
+        <button type="button" class="btn primary" (click)="launch()" [disabled]="isBusy()">Launch</button>
+      }
+      @if (canWrite() && canPause()) {
+        <button type="button" class="btn" (click)="pause()" [disabled]="isBusy()">Pause</button>
+      }
+      @if (canWrite()) {
+        <button type="button" class="btn" (click)="showMetricsForm.set(!showMetricsForm())">
+          {{ showMetricsForm() ? 'Cancel' : 'Update metrics' }}
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (showMetricsForm()) {
+    <form class="form-card" [formGroup]="metricsForm" (ngSubmit)="onSubmitMetrics()">
+    <app-form-errors [form]="metricsForm" />
+      <p class="notice">
+        This replaces the stored metrics entirely — enter the full snapshot, not just what changed. Channel names
+        must match this campaign's channels: {{ campaign.channels.join(', ') }}.
+      </p>
+      <app-pillar-kpis [metrics]="preview()" />
+      <div class="grid">
+        <label>
+          <span>Impressions (channel=count, one per line)</span>
+          <textarea formControlName="impressions" rows="3"></textarea>
+        </label>
+        <label>
+          <span>Clicks (channel=count)</span>
+          <textarea formControlName="clicks" rows="3"></textarea>
+        </label>
+        <label>
+          <span>Conversions (channel=count)</span>
+          <textarea formControlName="conversions" rows="3"></textarea>
+        </label>
+        <label>
+          <span>Spent budget</span>
+          <input type="number" formControlName="spentBudget" min="0" />
+        </label>
+        <label>
+          <span>Actual revenue</span>
+          <input type="number" formControlName="actualRevenue" min="0" />
+        </label>
+      </div>
+      <div class="footer">
+        <button type="submit" [disabled]="isBusy()">{{ isBusy() ? 'Saving…' : 'Save metrics' }}</button>
+      </div>
+    </form>
+  }
+
+  <app-pillar-chart title="Conversion funnel" [labels]="['Impressions', 'Clicks', 'Conversions']" [series]="performanceSeries()" />
+  <div class="cards">
+    <div class="card">
+      <h3>Budget & performance</h3>
+      <dl>
+        <dt>Budget</dt>
+        <dd>${{ campaign.spentBudget }} / ${{ campaign.totalBudget }}</dd>
+        <dt>Impressions</dt>
+        <dd>{{ campaign.totalImpressions }}</dd>
+        <dt>Clicks</dt>
+        <dd>{{ campaign.totalClicks }} (CTR {{ (campaign.ctr * 100).toFixed(2) }}%)</dd>
+        <dt>Conversions</dt>
+        <dd>{{ campaign.totalConversions }} (rate {{ (campaign.conversionRate * 100).toFixed(2) }}%)</dd>
+        <dt>CPC / CPA</dt>
+        <dd>${{ campaign.cpc.toFixed(2) }} / ${{ campaign.cpa.toFixed(2) }}</dd>
+        <dt>ROI / ROAS</dt>
+        <dd>{{ (campaign.roi * 100).toFixed(2) }}% / {{ campaign.roas.toFixed(2) }}x</dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <h3>Details</h3>
+      <dl>
+        <dt>Channels</dt>
+        <dd>{{ campaign.channels.join(', ') }}</dd>
+        <dt>Dates</dt>
+        <dd>{{ campaign.startDate }} → {{ campaign.endDate }}</dd>
+        <dt>Launched</dt>
+        <dd>{{ campaign.launchedAt || 'Not launched' }}</dd>
+      </dl>
+    </div>
+  </div>
+}

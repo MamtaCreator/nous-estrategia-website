@@ -1,0 +1,208 @@
+import { Lang } from './translations';
+
+export interface PillarText {
+  kicker: string;
+  title: string;
+  sub: string;
+  /** [title, body] pairs */
+  cards: [string, string][];
+  /** alt text for image media */
+  alt?: string;
+}
+
+export const PILLAR_COPY: Record<string, Record<Lang, PillarText>> = {
+  finance: {
+    en: {
+      kicker: 'Pillar 1',
+      title: 'Smart Finance & Dashboards',
+      sub: 'Turn accounting and financial data into clear, high-value business decisions.',
+      cards: [
+        [
+          'Financial Diagnosis',
+          'Review revenue, costs, expenses and cash flow. Identify money leaks and provide an executive findings report.'
+        ],
+        [
+          'Control, Analysis & Visibility',
+          'Interactive dashboards showing key KPIs, revenue projections and executive variance analysis.'
+        ],
+        [
+          'Optimization & Standardization',
+          'Financial control models plus standardized and automated recurring reports.'
+        ],
+        [
+          'External CFO — CFO as a Service',
+          'Strategic planning, investment evaluation, committees and key decisions without a full-time internal CFO.'
+        ]
+      ]
+    },
+    es: {
+      kicker: 'Pilar 1',
+      title: 'Finanzas Inteligentes y Dashboards',
+      sub: 'Convertimos los datos contables y financieros en decisiones claras y de alto valor.',
+      cards: [
+        [
+          'Diagnóstico Financiero',
+          'Revisión de ingresos, costos, gastos y flujo de caja. Identificamos fugas de dinero y entregamos un informe ejecutivo de hallazgos.'
+        ],
+        [
+          'Control, Análisis y Visibilidad',
+          'Tableros interactivos con los principales KPIs, proyecciones de ingresos y análisis ejecutivo de desviaciones.'
+        ],
+        [
+          'Optimización y Estandarización',
+          'Modelos de control financiero y reportes recurrentes estandarizados y automatizados.'
+        ],
+        [
+          'CFO Externo — CFO como Servicio',
+          'Planeación estratégica, evaluación de inversiones, comités y decisiones clave sin necesidad de un CFO interno de tiempo completo.'
+        ]
+      ]
+    }
+  },
+  marketing: {
+    en: {
+      kicker: 'Pillar 2',
+      title: 'Digital Marketing & Content Creation',
+      sub: 'We build a measurable digital ecosystem connected to sales and profitability.',
+      cards: [
+        [
+          'Web',
+          'Website design and development, conversion-focused UX/UI and strategic SEO.'
+        ],
+        [
+          'Social Media',
+          'Planning, content calendars and multi-channel social media management.'
+        ],
+        [
+          'Audiovisual & Graphics',
+          'On-site or studio recording, video editing, graphic design and brand kits.'
+        ],
+        [
+          'Performance Campaigns',
+          'Paid campaigns focused on acquiring qualified customers, with clear ROI metrics.'
+        ]
+      ]
+    },
+    es: {
+      kicker: 'Pilar 2',
+      title: 'Marketing Digital y Creación de Contenido',
+      sub: 'Construimos un ecosistema digital medible conectado con las ventas y la rentabilidad.',
+      cards: [
+        [
+          'Web',
+          'Diseño y desarrollo de sitios web, UX/UI enfocado en conversión y SEO estratégico.'
+        ],
+        [
+          'Redes Sociales',
+          'Planeación, calendarios de contenido y gestión de redes sociales en múltiples canales.'
+        ],
+        [
+          'Audiovisual y Gráfico',
+          'Grabación en sitio o en estudio, edición de video, diseño gráfico y kits de marca.'
+        ],
+        [
+          'Campañas de Performance',
+          'Campañas pagas enfocadas en adquirir clientes calificados, con métricas de ROI claras.'
+        ]
+      ]
+    }
+  },
+  process: {
+    en: {
+      kicker: 'Pillar 3',
+      title: 'Strategic Control & Process Improvement',
+      sub: 'Diagnose operational processes to remove bottlenecks, reduce costs and increase profit margins.',
+      cards: [
+        [
+          'Operational Process Diagnosis',
+          'Map workflows and identify operational friction.'
+        ],
+        [
+          'Internal Control & Risk Matrix',
+          'Implement financial and operational risk-management methods.'
+        ],
+        [
+          'Reengineering Recommendations',
+          'Redesign workflows to maximize productivity in key business areas.'
+        ],
+        [
+          'Business Sustainability',
+          'Governance models that support long-term stability and scalability.'
+        ]
+      ],
+      alt: 'Process review with a checklist'
+    },
+    es: {
+      kicker: 'Pilar 3',
+      title: 'Control Estratégico y Mejora de Procesos',
+      sub: 'Diagnosticamos los procesos operativos para eliminar cuellos de botella, reducir costos y aumentar los márgenes de utilidad.',
+      alt: 'Revisión de procesos con una lista de verificación',
+      cards: [
+        [
+          'Diagnóstico de Procesos Operativos',
+          'Mapeamos los flujos de trabajo e identificamos la fricción operativa.'
+        ],
+        [
+          'Control Interno y Matriz de Riesgos',
+          'Implementamos métodos de gestión de riesgos financieros y operativos.'
+        ],
+        [
+          'Recomendaciones de Reingeniería',
+          'Rediseñamos los flujos de trabajo para maximizar la productividad en las áreas clave del negocio.'
+        ],
+        [
+          'Sostenibilidad Empresarial',
+          'Modelos de gobierno que respaldan la estabilidad y la escalabilidad a largo plazo.'
+        ]
+      ]
+    }
+  },
+  ai: {
+    en: {
+      kicker: 'Pillar 4',
+      title: 'AI & Process Automation',
+      sub: 'Combine AI and automation to transform repetitive manual tasks into agile and profitable processes.',
+      cards: [
+        [
+          'Workflow Automation',
+          'Connect operational, commercial and administrative tools to reduce response times.'
+        ],
+        [
+          'Predictive Models & Data Intelligence',
+          'AI assistants and data tools for faster executive decisions.'
+        ],
+        [
+          'Automated Reports',
+          'Generate management information in real time without manual intervention.'
+        ],
+        [
+          'Digital Training & Adoption',
+          'Help teams adopt AI and a digital culture through training and guidance.'
+        ]
+      ]
+    },
+    es: {
+      kicker: 'Pilar 4',
+      title: 'IA y Automatización de Procesos',
+      sub: 'Combinamos IA y automatización para transformar tareas manuales repetitivas en procesos ágiles y rentables.',
+      cards: [
+        [
+          'Automatización de Flujos de Trabajo',
+          'Conectamos herramientas operativas, comerciales y administrativas para reducir los tiempos de respuesta.'
+        ],
+        [
+          'Modelos Predictivos e Inteligencia de Datos',
+          'Asistentes de IA y herramientas de datos para decisiones ejecutivas más rápidas.'
+        ],
+        [
+          'Reportes Automatizados',
+          'Generamos información gerencial en tiempo real sin intervención manual.'
+        ],
+        [
+          'Capacitación y Adopción Digital',
+          'Ayudamos a los equipos a adoptar la IA y una cultura digital mediante capacitación y acompañamiento.'
+        ]
+      ]
+    }
+  }
+};

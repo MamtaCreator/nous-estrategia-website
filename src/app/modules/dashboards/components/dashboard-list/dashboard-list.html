@@ -1,0 +1,64 @@
+<div class="header">
+  <div>
+    <a class="back" [routerLink]="['/app/clients', clientId]">← Back to client</a>
+    <h1>Dashboards</h1>
+  </div>
+  <div class="actions">
+    <a class="btn" [routerLink]="['/app/clients', clientId, 'kpis']">KPIs</a>
+    @if (canWrite()) {
+      <button type="button" class="btn primary" (click)="showForm.set(!showForm())">{{ showForm() ? 'Cancel' : '+ New dashboard' }}</button>
+    }
+  </div>
+</div>
+
+@if (showForm()) {
+  <form class="form-card" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="grid">
+      <label class="span-2"><span>Name</span><input type="text" formControlName="name" /></label>
+      <label>
+        <span>Type</span>
+        <select formControlName="type">@for (t of types; track t) { <option [value]="t">{{ t }}</option> }</select>
+      </label>
+      <label class="span-2"><span>Description</span><input type="text" formControlName="description" /></label>
+      <label><span>Refresh interval (seconds, 30–86400)</span><input type="number" formControlName="refreshIntervalSeconds" min="30" /></label>
+      <label class="check"><input type="checkbox" formControlName="isPublic" /> Visible to everyone on this client</label>
+    </div>
+    <h3>KPIs to show</h3>
+    @if (kpis().length === 0) {
+      <p class="hint">This client has no KPIs yet — create some first.</p>
+    } @else {
+      <div class="check-list">
+        @for (k of kpis(); track k.id) {
+          <label class="check">
+            <input type="checkbox" [checked]="selectedKpis().includes(k.id)" (change)="toggleKpi(k.id, $any($event.target).checked)" />
+            {{ k.name }}
+          </label>
+        }
+      </div>
+    }
+    <div class="footer"><button type="submit" class="btn primary" [disabled]="isBusy()">Create</button></div>
+  </form>
+}
+
+@if (isLoading()) {
+  <p class="hint">Loading…</p>
+} @else if (loadFailed()) {
+  <p role="alert">Could not load dashboards. <button type="button" (click)="load()">Try again</button></p>
+} @else if (dashboards().length === 0) {
+  <p class="hint">No dashboards yet.</p>
+} @else {
+  <table>
+    <thead><tr><th>Name</th><th>Type</th><th>KPIs</th><th>Visibility</th><th></th></tr></thead>
+    <tbody>
+      @for (d of dashboards(); track d.id) {
+        <tr class="link" [routerLink]="['/app/clients', clientId, 'dashboards', d.id]">
+          <td class="name">{{ d.name }}</td>
+          <td>{{ d.type }}</td>
+          <td>{{ d.kpis.length }}</td>
+          <td>{{ d.isPublic ? 'Client-wide' : 'Private' }}</td>
+          <td>@if (canWrite()) { <button type="button" class="btn" (click)="archive(d.id, d.name, $event)">Archive</button> }</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

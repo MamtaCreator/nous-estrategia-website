@@ -1,0 +1,12 @@
+<app-toast-host />
+@if (isCrmRoute()) {
+  <router-outlet />
+} @else {
+  <div class="stage">
+    <div class="wrap" [class.mobile]="viewport.mode() === 'mobile'">
+      <app-site-header />
+      <router-outlet />
+      <app-site-footer />
+    </div>
+  </div>
+}

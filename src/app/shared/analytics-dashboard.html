@@ -1,0 +1,151 @@
+@if (failed() && !data()) {
+  <p class="state" role="alert">{{ t('demo.unavailable') }} <button type="button" (click)="load()">{{ t('demo.retry') }}</button></p>
+} @else if (data(); as d) {
+  <section class="dash" [class.busy]="busy()" [attr.aria-label]="t('demo.title')">
+    <header class="top">
+      <h4>{{ t('demo.title') }}</h4>
+      <span class="period">{{ period(d) }}</span>
+    </header>
+
+    <div class="controls">
+      <span class="hint">{{ t('demo.hint') }}</span>
+      <label>{{ t('demo.from') }}
+        <select class="pick" (change)="onFrom($any($event.target).value)">
+          <option value="">{{ monthName(d.minMonth) }}</option>
+          @for (m of months(); track m) { <option [value]="m" [selected]="fromMonth() === m">{{ monthName(m) }}</option> }
+        </select>
+      </label>
+      <label>{{ t('demo.to') }}
+        <select class="pick" (change)="onTo($any($event.target).value)">
+          <option value="">{{ monthName(d.maxMonth) }}</option>
+          @for (m of months(); track m) { <option [value]="m" [selected]="toMonth() === m">{{ monthName(m) }}</option> }
+        </select>
+      </label>
+      @if (category(); as c) { <button type="button" class="chip" (click)="toggleCategory(c)">{{ catName(c) }} ✕</button> }
+      @if (filtered()) { <button type="button" class="chip clear" (click)="clear()">{{ t('demo.clear') }}</button> }
+    </div>
+
+    <div class="kpi-row">
+      <div class="panel gauge">
+        <svg viewBox="0 0 200 115" role="img" [attr.aria-label]="t('demo.gauge.spent') + ' ' + n(d.totals.spent)">
+          <path d="M 20 100 A 80 80 0 0 1 180 100" class="g-track" />
+          <path [attr.d]="'M 20 100 A 80 80 0 0 1 ' + gaugeEnd().x + ' ' + gaugeEnd().y" class="g-fill" />
+          <text x="100" y="92" class="g-value">{{ n(d.totals.spent) }}</text>
+          <text x="100" y="108" class="g-label">{{ t('demo.gauge.spent') }}</text>
+          <text x="20" y="114" class="g-tick">0</text>
+          <text x="180" y="114" class="g-tick" text-anchor="end">{{ n(d.totals.budget) }}</text>
+        </svg>
+      </div>
+      <div class="panel kpi"><strong>{{ n(d.totals.spentPercent, 1) }} %</strong><span>{{ t('demo.pctSpent') }}</span></div>
+      <div class="panel kpi"><strong>{{ n(d.totals.balance) }}</strong><span>{{ t('demo.balance') }}</span></div>
+      <div class="panel kpi"><strong>{{ n(d.totals.budget) }}</strong><span>{{ t('demo.budget') }}</span></div>
+    </div>
+
+    <div class="mid-row">
+      <div class="panel">
+        <h5>{{ t('demo.byCategory') }}</h5>
+        @for (r of d.categories; track r.key) {
+          <button type="button" class="hbar" [class.active]="category() === r.key" [class.dim]="category() && category() !== r.key"
+            [attr.aria-pressed]="category() === r.key" (click)="toggleCategory(r.key)"
+            (mouseenter)="showTip($event, catName(r.key) + ' · ' + t('demo.tip.spent') + ' ' + n(r.spent) + ' / ' + n(r.budget) + ' (' + n(r.spentPercent, 1) + '%)')"
+            (mousemove)="showTip($event, catName(r.key) + ' · ' + t('demo.tip.spent') + ' ' + n(r.spent) + ' / ' + n(r.budget) + ' (' + n(r.spentPercent, 1) + '%)')"
+            (mouseleave)="hideTip()" (focus)="showTip($event, catName(r.key))" (blur)="hideTip()">
+            <span class="lbl">{{ catName(r.key) }}</span>
+            <span class="track"><span class="fill" [style.width.%]="(r.spent / maxSpent()) * 100"></span></span>
+            <span class="val">{{ n(r.spent) }}</span>
+          </button>
+        }
+      </div>
+
+      <div class="panel">
+        <h5>{{ t('demo.byMonth') }}@if (category(); as c) { <small>· {{ catName(c) }}</small> }</h5>
+        <svg viewBox="0 0 240 120" role="img" [attr.aria-label]="t('demo.byMonth')">
+          <polyline [attr.points]="linePath()" class="line" />
+          @for (p of linePoints(); track p.month) {
+            <circle [attr.cx]="p.x" [attr.cy]="p.y" r="6" class="hit" tabindex="0" role="button" [attr.aria-label]="monthName(p.month) + ' ' + n(p.v)"
+              [class.on]="fromMonth() === p.month && toMonth() === p.month"
+              (click)="setRange(p.month, p.month)" (keydown.enter)="setRange(p.month, p.month)"
+              (mouseenter)="showTip($event, monthName(p.month, 'long') + ' · ' + n(p.v))" (mousemove)="showTip($event, monthName(p.month, 'long') + ' · ' + n(p.v))" (mouseleave)="hideTip()" />
+            <circle [attr.cx]="p.x" [attr.cy]="p.y" r="2.6" class="dot" [class.on]="fromMonth() === p.month && toMonth() === p.month" />
+            <text [attr.x]="p.x" [attr.y]="p.y - 7" class="pt">{{ n(p.v / 1000, 1) }}</text>
+            <text [attr.x]="p.x" y="116" class="axis">{{ monthName(p.month) }}</text>
+          }
+        </svg>
+      </div>
+
+      <div class="panel">
+        <h5>{{ t('demo.bySemester') }}</h5>
+        <svg viewBox="0 0 120 100" role="img" [attr.aria-label]="t('demo.bySemester')">
+          <g transform="rotate(-90 60 50)">
+            @for (s of slices(); track s.semester; let i = $index) {
+              <circle class="slice" cx="60" cy="50" r="36" fill="none" stroke-width="14" [attr.stroke]="s.color"
+                [class.on]="isRange(s.fromMonth, s.toMonth)" [attr.stroke-dasharray]="dash(s.percent)" [attr.stroke-dashoffset]="offset(i)"
+                tabindex="0" role="button" [attr.aria-label]="t('demo.sem') + ' ' + s.semester"
+                (click)="setRange(s.fromMonth, s.toMonth)" (keydown.enter)="setRange(s.fromMonth, s.toMonth)"
+                (mouseenter)="showTip($event, t('demo.sem') + ' ' + s.semester + ' · ' + n(s.spent) + ' (' + n(s.percent, 1) + '%)')"
+                (mousemove)="showTip($event, t('demo.sem') + ' ' + s.semester + ' · ' + n(s.spent) + ' (' + n(s.percent, 1) + '%)')" (mouseleave)="hideTip()" />
+            }
+          </g>
+        </svg>
+        <ul class="legend">
+          @for (s of slices(); track s.semester) {
+            <li><button type="button" (click)="setRange(s.fromMonth, s.toMonth)" [class.active]="isRange(s.fromMonth, s.toMonth)">
+              <i [style.background]="s.color"></i>{{ t('demo.sem') }} {{ s.semester }} · {{ n(s.spent / 1000) }} {{ t('demo.k') }} ({{ n(s.percent, 1) }}%)</button></li>
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="bottom-row">
+      <div class="panel">
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>{{ t('demo.col.category') }}</th><th>{{ t('demo.budget') }}</th><th>{{ t('demo.gauge.spent') }}</th><th>{{ t('demo.balance') }}</th><th>{{ t('demo.pctSpent') }}</th></tr></thead>
+          <tbody>
+            @for (r of sortedRows(); track r.key) {
+              <tr class="row" [class.active]="category() === r.key" tabindex="0" (click)="toggleCategory(r.key)" (keydown.enter)="toggleCategory(r.key)">
+                <td>{{ catName(r.key) }}</td>
+                <td>{{ n(r.budget) }}</td>
+                <td>{{ n(r.spent) }}</td>
+                <td>{{ n(r.balance) }}</td>
+                <td [class.hot]="r.spentPercent >= 90" [class.warm]="r.spentPercent >= 80 && r.spentPercent < 90">{{ n(r.spentPercent, 1) }}%</td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr><td>{{ t('demo.total') }}</td><td>{{ n(tableTotals().budget) }}</td><td>{{ n(tableTotals().spent) }}</td><td>{{ n(tableTotals().balance) }}</td><td>{{ n(tableTotals().pct, 1) }}%</td></tr>
+          </tfoot>
+        </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h5>{{ t('demo.byQuarter') }}</h5>
+        <div class="cols">
+          @for (q of d.quarterly; track q.quarter) {
+            <button type="button" class="col" [class.active]="isRange(q.fromMonth, q.toMonth)" (click)="setRange(q.fromMonth, q.toMonth)"
+              (mouseenter)="showTip($event, t('demo.q') + q.quarter + ' · ' + n(q.spent))" (mousemove)="showTip($event, t('demo.q') + q.quarter + ' · ' + n(q.spent))" (mouseleave)="hideTip()">
+              <span class="cv">{{ n(q.spent) }}</span>
+              <span class="cbar" [style.height.%]="(q.spent / maxQuarter()) * 100"></span>
+              <span class="cl">{{ t('demo.q') }}{{ q.quarter }}</span>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="color-key" role="group" [attr.aria-label]="t('demo.legend.title')">
+      <strong>{{ t('demo.legend.title') }}</strong>
+      <span><i class="sw sw-hot"></i>{{ t('demo.legend.hot') }}</span>
+      <span><i class="sw sw-warm"></i>{{ t('demo.legend.warm') }}</span>
+      <span><i class="sw sw-ok"></i>{{ t('demo.legend.ok') }}</span>
+      <span><i class="sw sw-bar"></i>{{ t('demo.legend.bar') }}</span>
+      <span><i class="sw sw-sel"></i>{{ t('demo.legend.selected') }}</span>
+    </div>
+
+    @if (tip(); as tp) { <div class="tip" [style.left.px]="tp.x" [style.top.px]="tp.y" role="status">{{ tp.text }}</div> }
+    @if (failed()) { <p class="state" role="alert">{{ t('demo.unavailable') }} <button type="button" (click)="load()">{{ t('demo.retry') }}</button></p> }
+  </section>
+} @else {
+  <p class="state">{{ t('demo.loading') }}</p>
+}

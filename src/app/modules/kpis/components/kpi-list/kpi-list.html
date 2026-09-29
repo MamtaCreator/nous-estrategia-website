@@ -1,0 +1,91 @@
+<div class="header">
+  <div>
+    <a class="back" [routerLink]="['/app/clients', clientId]">← Back to client</a>
+    <h1>KPIs</h1>
+  </div>
+  <div class="actions">
+    <a class="btn" [routerLink]="['/app/clients', clientId, 'dashboards']">Dashboards</a>
+    @if (canWrite()) {
+      <button type="button" class="btn" (click)="createDefaults()" [disabled]="isBusy()">Create catalog KPIs</button>
+      <button type="button" class="btn" (click)="recalculate()" [disabled]="isBusy()">Recalculate</button>
+      <button type="button" class="btn primary" (click)="showForm.set(!showForm())">{{ showForm() ? 'Cancel' : '+ New KPI' }}</button>
+    }
+  </div>
+</div>
+
+@if (summary(); as s) {
+  <div class="tiles">
+    <div class="tile"><span>Total</span><strong>{{ s.total }}</strong></div>
+    <div class="tile green"><span>Green</span><strong>{{ s.green }}</strong></div>
+    <div class="tile amber"><span>Amber</span><strong>{{ s.amber }}</strong></div>
+    <div class="tile red"><span>Red</span><strong>{{ s.red }}</strong></div>
+    <div class="tile"><span>Not evaluated</span><strong>{{ s.notEvaluated }}</strong></div>
+  </div>
+  @if (s.needsAttention.length) {
+    <p class="notice">Needs attention: {{ s.needsAttention.map(k => k.name).join(', ') }}</p>
+  }
+}
+
+@if (showForm()) {
+  <form class="form-card" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <p class="notice">Pick a built-in metric to make this a calculated KPI (category, type and unit then come from the catalog); leave it blank for a manual KPI you record values for.</p>
+    <div class="grid">
+      <label class="span-2"><span>Name</span><input type="text" formControlName="name" /></label>
+      <label>
+        <span>Built-in metric (optional)</span>
+        <select formControlName="metricKey">
+          <option value="">Manual KPI</option>
+          @for (m of catalog(); track m.key) { <option [value]="m.key">{{ m.name }}</option> }
+        </select>
+      </label>
+      <label class="span-2"><span>Description</span><input type="text" formControlName="description" /></label>
+      <label><span>Unit</span><input type="text" formControlName="unit" placeholder="points" /></label>
+      <label>
+        <span>Category</span>
+        <select formControlName="category">@for (c of categories; track c) { <option [value]="c">{{ c }}</option> }</select>
+      </label>
+      <label>
+        <span>Data type</span>
+        <select formControlName="dataType">@for (d of dataTypes; track d) { <option [value]="d">{{ d }}</option> }</select>
+      </label>
+      <label><span>Target</span><input type="number" formControlName="targetValue" /></label>
+      <label><span>Min threshold</span><input type="number" formControlName="minThreshold" /></label>
+      <label><span>Max threshold</span><input type="number" formControlName="maxThreshold" /></label>
+      <label class="check"><input type="checkbox" formControlName="higherIsBetter" /> Higher is better (manual KPIs)</label>
+    </div>
+    <div class="footer"><button type="submit" class="btn primary" [disabled]="isBusy()">Create</button></div>
+  </form>
+}
+
+<div class="filters">
+  <select (change)="onCategory($any($event.target).value)">
+    <option value="">All categories</option>
+    @for (c of categories; track c) { <option [value]="c">{{ c }}</option> }
+  </select>
+  <button type="button" class="btn" (click)="load()" [disabled]="isLoading()">Refresh</button>
+</div>
+
+@if (isLoading()) {
+  <p class="hint">Loading…</p>
+} @else if (loadFailed()) {
+  <p role="alert">Could not load KPIs. <button type="button" (click)="load()">Try again</button></p>
+} @else if (kpis().length === 0) {
+  <p class="hint">No KPIs yet. Use "Create catalog KPIs" to start from the built-in metrics.</p>
+} @else {
+  <table>
+    <thead><tr><th>Name</th><th>Category</th><th>Type</th><th>Current</th><th>Target</th><th>vs target</th><th>Status</th></tr></thead>
+    <tbody>
+      @for (kpi of kpis(); track kpi.id) {
+        <tr class="link" [routerLink]="['/app/clients', clientId, 'kpis', kpi.id]">
+          <td class="name">{{ kpi.name }}</td>
+          <td>{{ kpi.category }}</td>
+          <td>{{ kpi.isCalculated ? 'Calculated' : 'Manual' }}</td>
+          <td>{{ format(kpi) }}</td>
+          <td>{{ kpi.targetValue ?? '—' }}</td>
+          <td>{{ kpi.percentageToTarget === null ? '—' : (kpi.percentageToTarget | number: '1.0-0') + '%' }}</td>
+          <td>@if (kpi.status) { <span class="badge" [class]="kpi.status.toLowerCase()">{{ kpi.status }}</span> } @else { <span class="badge">n/a</span> }</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

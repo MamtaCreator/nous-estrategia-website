@@ -1,0 +1,94 @@
+<app-pillar-nav [clientId]="clientId" />
+<div class="header">
+  <div>
+    <a class="back" [routerLink]="['/app/clients', clientId]">← Back to client</a>
+    <h1>Marketing campaigns</h1>
+  </div>
+  @if (canWrite()) {
+    <button type="button" class="btn primary" (click)="showForm.set(!showForm())">
+      {{ showForm() ? 'Cancel' : '+ New campaign' }}
+    </button>
+  }
+</div>
+
+<div class="pillar-filters">
+  <label>Search by name <input #searchInput type="search" [value]="search()" (input)="search.set(searchInput.value)" /></label>
+  <label>Status <select #statusInput [value]="statusFilter()" (change)="statusFilter.set(statusInput.value)"><option value="">All statuses</option>@for (status of statuses; track status) { <option [value]="status">{{ status }}</option> }</select></label>
+  <button type="button" (click)="search.set(''); statusFilter.set('')">Clear filters</button>
+  <button type="button" (click)="load()" [disabled]="isLoading()">Refresh</button>
+  <button type="button" (click)="exportReport()" [disabled]="isLoading() || loadFailed() || !filtered().length">Export CSV</button>
+</div>
+@if (!isLoading() && !loadFailed()) {
+  <app-pillar-kpis [metrics]="metrics()" />
+  <app-pillar-chart title="Campaign ROI" [labels]="chartLabels()" [series]="chartSeries()" unit="%" />
+}
+
+@if (showForm()) {
+  <form class="form-card" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <app-form-errors [form]="form" />
+    <div class="grid">
+      <label class="span-2">
+        <span>Name</span>
+        <input type="text" formControlName="name" />
+      </label>
+      <label>
+        <span>Type</span>
+        <input type="text" formControlName="type" placeholder="social_media" />
+      </label>
+      <label>
+        <span>Objective</span>
+        <input type="text" formControlName="objective" placeholder="Sales" />
+      </label>
+      <label class="span-2">
+        <span>Channels (comma-separated)</span>
+        <input type="text" formControlName="channels" placeholder="Instagram, Facebook" />
+      </label>
+      <label>
+        <span>Total budget</span>
+        <input type="number" formControlName="totalBudget" min="0" />
+      </label>
+      <label>
+        <span>Start date</span>
+        <input type="date" formControlName="startDate" />
+      </label>
+      <label>
+        <span>End date</span>
+        <input type="date" formControlName="endDate" />
+      </label>
+    </div>
+    <div class="footer">
+      <button type="submit" [disabled]="isSaving()">{{ isSaving() ? 'Saving…' : 'Create' }}</button>
+    </div>
+  </form>
+}
+
+@if (isLoading()) {
+  <p class="hint">Loading…</p>
+} @else if (loadFailed()) {
+  <p role="alert">Could not load this pillar. <button type="button" (click)="load()">Try again</button></p>
+} @else if (filtered().length === 0) {
+  <p class="hint">No campaigns match this selection.</p>
+} @else {
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Budget</th>
+        <th>ROI</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (campaign of filtered(); track campaign.id) {
+        <tr [routerLink]="['/app/clients', clientId, 'marketing', campaign.id]">
+          <td class="name"><a [routerLink]="['/app/clients', clientId, 'marketing', campaign.id]">{{ campaign.name }}</a></td>
+          <td>{{ campaign.type }}</td>
+          <td><span class="status" [class]="campaign.status.toLowerCase()">{{ campaign.status }}</span></td>
+          <td>${{ campaign.spentBudget }} / ${{ campaign.totalBudget }}</td>
+          <td>{{ campaign.roi * 100 | number: '1.0-1' }}%</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

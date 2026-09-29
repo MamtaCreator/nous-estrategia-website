@@ -1,0 +1,29 @@
+@if (loading.isLoading()) {
+  <div class="loading-bar"></div>
+}
+
+<div class="crm-shell">
+  <header class="crm-header">
+    <a class="brand" routerLink="/app" aria-label="NOUS Estrategia dashboard"><img src="/images/logo-nous.png" alt="NOUS Estrategia" width="961" height="293" /></a>
+    <nav>
+      <a routerLink="/app" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
+      <a routerLink="/app/clients" routerLinkActive="active">Clients</a>
+      <a routerLink="/app/assessments" routerLinkActive="active">Assessments</a>
+    </nav>
+    <form class="search" (submit)="$event.preventDefault(); search(q.value)" role="search"><input #q type="search" placeholder="Search…" aria-label="Search" /></form>
+    <a class="bell" routerLink="/app/notifications" aria-label="Notifications">🔔@if (unread() > 0) { <span class="count">{{ unread() > 99 ? "99+" : unread() }}</span> }</a>
+    <div class="user">
+      @if (auth.currentUser(); as user) {
+        <span class="user-name">{{ user.name }}</span>
+        <span class="user-role">{{ user.role }}</span>
+        <!-- Which tenant's data is on screen. Platform staff see every organization, so it matters most to them. -->
+        @if (user.organizationName) { <span class="user-org" title="Organization">{{ user.organizationName }}</span> }
+      }
+      <button type="button" (click)="logout()">Log out</button>
+    </div>
+  </header>
+
+  <main class="crm-content">
+    <router-outlet />
+  </main>
+</div>

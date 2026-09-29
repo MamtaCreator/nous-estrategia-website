@@ -1,0 +1,59 @@
+<a class="back" [routerLink]="['/app/clients', clientId, 'kpis']">← Back to KPIs</a>
+
+@if (isLoading()) {
+  <p class="hint">Loading…</p>
+} @else if (loadFailed()) {
+  <p role="alert">Could not load this KPI. <button type="button" (click)="load()">Try again</button></p>
+} @else if (kpi(); as k) {
+  <div class="header">
+    <div>
+      <h1>{{ k.name }}</h1>
+      <p class="hint">{{ k.category }} · {{ k.isCalculated ? 'Calculated (' + k.metricKey + ')' : 'Manual' }}
+        @if (k.status) { · <span class="badge" [class]="k.status.toLowerCase()">{{ k.status }}</span> }</p>
+    </div>
+    @if (canWrite()) {
+      <button type="button" class="btn" (click)="deactivate()">Deactivate</button>
+    }
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <h3>Current value</h3>
+      <div class="value">{{ k.currentValue === null ? '—' : (k.currentValue | number: '1.0-2') }} {{ k.unit }}</div>
+      <div class="meta">Target {{ k.targetValue ?? '—' }}
+        @if (k.percentageToTarget !== null) { · {{ k.percentageToTarget | number: '1.0-0' }}% of target }</div>
+      <div class="meta">Last measured {{ k.lastMeasuredAt ? (k.lastMeasuredAt | slice: 0 : 10) : 'never' }}</div>
+    </div>
+    @if (history(); as h) {
+      <div class="card">
+        <h3>Trend ({{ days() }} days) — {{ h.trend.assessment }}</h3>
+        <dl>
+          <dt>Points</dt><dd>{{ h.trend.points }}</dd>
+          <dt>Average</dt><dd>{{ h.trend.average === null ? '—' : (h.trend.average | number: '1.0-2') }}</dd>
+          <dt>Min / Max</dt><dd>{{ h.minValue ?? '—' }} / {{ h.maxValue ?? '—' }}</dd>
+          <dt>Change</dt><dd>{{ h.trend.changePercent === null ? '—' : (h.trend.changePercent | number: '1.0-1') + '%' }}</dd>
+        </dl>
+      </div>
+    }
+  </div>
+
+  @if (canWrite() && !k.isCalculated) {
+    <form class="form-card" [formGroup]="valueForm" (ngSubmit)="onRecord()">
+      <h3>Record a value</h3>
+      <div class="grid">
+        <label><span>Value</span><input type="number" formControlName="value" step="any" /></label>
+        <label class="span-2"><span>Notes</span><input type="text" formControlName="notes" /></label>
+      </div>
+      <div class="footer"><button type="submit" class="btn primary" [disabled]="isBusy()">Record</button></div>
+    </form>
+  } @else if (k.isCalculated) {
+    <p class="notice">This is a calculated KPI — values are stored by "Recalculate" on the KPI list, not entered by hand.</p>
+  }
+
+  <div class="filters">
+    <select (change)="onDays($any($event.target).value)">
+      @for (w of windows; track w) { <option [value]="w" [selected]="w === days()">Last {{ w }} days</option> }
+    </select>
+  </div>
+  <app-pillar-chart title="History" [labels]="chartLabels()" [series]="chartSeries()" [unit]="k.unit" />
+}

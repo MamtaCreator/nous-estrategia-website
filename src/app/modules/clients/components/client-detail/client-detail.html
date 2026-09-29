@@ -1,0 +1,68 @@
+<a class="back" routerLink="/app/clients">← Back to clients</a>
+
+@if (isLoading()) {
+  <p class="hint">Loading…</p>
+} @else if (clientService.selectedClient(); as client) {
+  <div class="header">
+    <div>
+      <h1>{{ client.companyName }}</h1>
+      <p class="subtitle">{{ client.industry }} · {{ client.country }}</p>
+    </div>
+    <div class="actions">
+      <a class="btn" [routerLink]="['/app/clients', client.id, 'projects']">Projects</a>
+      <a class="btn" [routerLink]="['/app/clients', client.id, 'kpis']">KPIs</a>
+      <a class="btn" [routerLink]="['/app/clients', client.id, 'dashboards']">Dashboards</a>
+      <a class="btn" [routerLink]="['/app/clients', client.id, 'assessments']">Assessments</a>
+      <a class="btn" [routerLink]="['/app/clients', client.id, 'alerts']">Alerts</a>
+      <a class="btn" [routerLink]="['/app/clients', client.id, 'insights']">Insights</a>
+      <a class="btn" [routerLink]="['/app/clients', client.id, 'reports']">Reports</a>
+      @if (auth.isAdmin()) { <a class="btn" [routerLink]="['/app/clients', client.id, 'audit']">Audit log</a> }
+      @if (client.activeServices.finance) {
+        <a class="btn" [routerLink]="['/app/clients', client.id, 'finance']">Finance</a>
+      }
+      @if (client.activeServices.marketing) {
+        <a class="btn" [routerLink]="['/app/clients', client.id, 'marketing']">Marketing</a>
+      }
+      @if (client.activeServices.processes) {
+        <a class="btn" [routerLink]="['/app/clients', client.id, 'processes']">Processes</a>
+      }
+      @if (client.activeServices.ai) {
+        <a class="btn" [routerLink]="['/app/clients', client.id, 'automations']">AI Automation</a>
+      }
+      @if (canWrite()) {
+        <a class="btn" [routerLink]="['/app/clients', client.id, 'edit']">Edit</a>
+      }
+      @if (canDelete()) {
+        <button type="button" class="btn danger" (click)="deleteClient()">Delete</button>
+      }
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <h3>Overview</h3>
+      <dl>
+        <dt>Email</dt>
+        <dd>{{ client.email }}</dd>
+        <dt>Subscription tier</dt>
+        <dd>{{ client.subscriptionTier }}</dd>
+        <dt>Status</dt>
+        <dd>{{ client.status }}</dd>
+        <dt>Projects</dt>
+        <dd>{{ client.projectCount }}</dd>
+        <dt>Assigned consultants</dt>
+        <dd>{{ client.assignedConsultantIds.length }}</dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <h3>Active services</h3>
+      <ul class="services">
+        <li [class.on]="client.activeServices.finance">Finance</li>
+        <li [class.on]="client.activeServices.marketing">Marketing</li>
+        <li [class.on]="client.activeServices.processes">Processes</li>
+        <li [class.on]="client.activeServices.ai">AI automation</li>
+      </ul>
+    </div>
+  </div>
+}

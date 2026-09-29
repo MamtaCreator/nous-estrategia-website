@@ -1,0 +1,255 @@
+<app-pillar-nav [clientId]="clientId" />
+<div class="header">
+  <div>
+    <a class="back" [routerLink]="['/app/clients', clientId]">← Back to client</a>
+    <h1>Finance</h1>
+  </div>
+  <div class="period-picker">
+    <input aria-label="Financial period" type="month" [formControl]="periodControl" />
+    <button type="button" (click)="load()" [disabled]="isLoading() || periodControl.invalid">Load</button>
+    @if (canWrite()) {
+      <button type="button" class="btn primary" (click)="showImportForm.set(!showImportForm())">
+        {{ showImportForm() ? 'Cancel' : '+ Import / update period' }}
+      </button>
+    }
+  </div>
+</div>
+
+@if (showImportForm()) {
+  <form class="form-card" [formGroup]="importForm" (ngSubmit)="onSubmitImport()">
+    <app-form-errors [form]="importForm" />
+    <p class="notice">
+      Saving replaces any existing data for that period. Revenue/expense breakdowns must sum to the totals below
+      (within a cent), and if you fill in the balance sheet fields, assets must equal liabilities + equity.
+    </p>
+    <app-pillar-kpis [metrics]="preview()" />
+    <div class="grid">
+      <label>
+        <span>Period (YYYY-MM)</span>
+        <input type="text" formControlName="period" placeholder="2026-03" />
+      </label>
+      <label>
+        <span>Total revenue</span>
+        <input type="number" formControlName="totalRevenue" min="0" />
+      </label>
+      <label>
+        <span>Total expenses</span>
+        <input type="number" formControlName="totalExpenses" min="0" />
+      </label>
+      <label>
+        <span>Fixed expenses</span>
+        <input type="number" formControlName="fixedExpenses" min="0" />
+      </label>
+      <label>
+        <span>Variable expenses</span>
+        <input type="number" formControlName="variableExpenses" min="0" />
+      </label>
+      <label class="span-2">
+        <span>Revenue by product (one "name=amount" per line)</span>
+        <textarea formControlName="revenueByProduct" rows="3" placeholder="Product A=60000"></textarea>
+      </label>
+      <label class="span-2">
+        <span>Expenses by category (one "name=amount" per line)</span>
+        <textarea formControlName="expensesByCategory" rows="3" placeholder="Payroll=50000"></textarea>
+      </label>
+
+      <label>
+        <span>Current assets</span>
+        <input type="number" formControlName="currentAssets" min="0" />
+      </label>
+      <label>
+        <span>Fixed assets</span>
+        <input type="number" formControlName="fixedAssets" min="0" />
+      </label>
+      <label>
+        <span>Current liabilities</span>
+        <input type="number" formControlName="currentLiabilities" min="0" />
+      </label>
+      <label>
+        <span>Long-term liabilities</span>
+        <input type="number" formControlName="longTermLiabilities" min="0" />
+      </label>
+      <label>
+        <span>Equity</span>
+        <input type="number" formControlName="equity" />
+      </label>
+      <label>
+        <span>Investing cash flow</span>
+        <input type="number" formControlName="investingCashFlow" />
+      </label>
+      <label>
+        <span>Financing cash flow</span>
+        <input type="number" formControlName="financingCashFlow" />
+      </label>
+    </div>
+    <div class="footer">
+      <button type="submit" [disabled]="isSaving()">{{ isSaving() ? 'Saving…' : 'Save' }}</button>
+    </div>
+  </form>
+}
+
+@if (isLoading()) {
+  <p class="hint">Loading…</p>
+} @else if (loadFailed()) {
+  <p role="alert">Financial data could not be loaded. <button type="button" (click)="load()">Try again</button></p>
+} @else if (finance.current(); as data) {
+  <div class="cards">
+    <div class="card">
+      <h3>{{ data.period }}</h3>
+      <dl>
+        <dt>Revenue</dt>
+        <dd>${{ data.totalRevenue | number }}</dd>
+        <dt>Expenses</dt>
+        <dd>${{ data.totalExpenses | number }}</dd>
+        <dt>Net income</dt>
+        <dd>${{ data.netIncome | number }}</dd>
+        <dt>Profit margin</dt>
+        <dd>{{ pct(data.profitMargin) }}</dd>
+        <dt>Operating margin</dt>
+        <dd>{{ pct(data.operatingMargin) }}</dd>
+        <dt>ROE</dt>
+        <dd>{{ pct(data.roe) }}</dd>
+        <dt>ROA</dt>
+        <dd>{{ pct(data.roa) }}</dd>
+        <dt>Current ratio</dt>
+        <dd>{{ data.currentRatio ?? '—' }}</dd>
+        <dt>Debt to equity</dt>
+        <dd>{{ data.debtToEquity ?? '—' }}</dd>
+        <dt>Net cash flow</dt>
+        <dd>${{ data.netCashFlow | number }}</dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <h3>Revenue by product</h3>
+      @if ((data.revenueByProduct | keyvalue)?.length) {
+        <ul class="breakdown">
+          @for (entry of data.revenueByProduct | keyvalue; track entry.key) {
+            <li><span>{{ entry.key }}</span><span>${{ entry.value | number }}</span></li>
+          }
+        </ul>
+      } @else {
+        <p class="hint">No breakdown recorded.</p>
+      }
+
+      <h3>Expenses by category</h3>
+      @if ((data.expensesByCategory | keyvalue)?.length) {
+        <ul class="breakdown">
+          @for (entry of data.expensesByCategory | keyvalue; track entry.key) {
+            <li><span>{{ entry.key }}</span><span>${{ entry.value | number }}</span></li>
+          }
+        </ul>
+      } @else {
+        <p class="hint">No breakdown recorded.</p>
+      }
+    </div>
+  </div>
+} @else {
+  <p class="hint">No data for this period yet.</p>
+}
+
+<div class="section">
+  <h2>Financial history</h2>
+  <p>Latest 60 recorded periods. All summary values and exports use the selected range.</p>
+  <div class="pillar-filters">
+    <label>From month <input #from type="month" (input)="rangeStart.set(from.value)" /></label>
+    <label>To month <input #to type="month" (input)="rangeEnd.set(to.value)" /></label>
+    <button type="button" (click)="exportReport()" [disabled]="historyFailed() || !filteredHistory().length">Export CSV</button>
+  </div>
+  @if (rangeStart() && rangeEnd() && rangeStart() > rangeEnd()) { <p role="alert">Choose an end month on or after the start month.</p> }
+  @if (historyFailed()) { <p role="alert">History could not be loaded. Refresh to try again.</p> }
+  <app-pillar-kpis [metrics]="metrics()" />
+  <app-pillar-chart title="Revenue, expenses and net income" [labels]="chartLabels()" [series]="chartSeries()" />
+  @if (filteredHistory().length === 0) {
+    <p class="hint">No history yet.</p>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>Period</th>
+          <th>Revenue</th>
+          <th>Expenses</th>
+          <th>Net income</th>
+          <th>Margin</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of filteredHistory(); track row.id) {
+          <tr>
+            <td>{{ row.period }}</td>
+            <td>${{ row.totalRevenue | number }}</td>
+            <td>${{ row.totalExpenses | number }}</td>
+            <td>${{ row.netIncome | number }}</td>
+            <td>{{ pct(row.profitMargin) }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
+
+@if (canWrite()) {
+<div class="section">
+  <h2>
+    Projections
+    <button type="button" class="btn small" (click)="showProjections.set(!showProjections())">
+      {{ showProjections() ? 'Hide' : 'Show' }}
+    </button>
+  </h2>
+
+  @if (showProjections()) {
+    <form class="form-card" [formGroup]="projectionForm" (ngSubmit)="onRunProjections()">
+    <app-form-errors [form]="projectionForm" />
+      <div class="grid">
+        <label>
+          <span>Current period (YYYY-MM)</span>
+          <input type="text" formControlName="currentPeriod" />
+        </label>
+        <label>
+          <span>Current revenue</span>
+          <input type="number" formControlName="currentRevenue" min="0" />
+        </label>
+        <label>
+          <span>Current expenses</span>
+          <input type="number" formControlName="currentExpenses" min="0" />
+        </label>
+        <label>
+          <span>Monthly revenue growth rate (e.g. 0.05 = 5%)</span>
+          <input type="number" formControlName="growthRate" step="0.01" />
+        </label>
+        <label>
+          <span>Monthly expense growth rate</span>
+          <input type="number" formControlName="expenseGrowthRate" step="0.01" />
+        </label>
+      </div>
+      <div class="footer">
+        <button type="submit" [disabled]="isProjecting()">{{ isProjecting() ? 'Calculating?' : 'Run projections' }}</button>
+      </div>
+    </form>
+
+    @if (projectionResult(); as result) {
+      <table>
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th>Revenue</th>
+            <th>Expenses</th>
+            <th>Profit</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (month of months(result); track month) {
+            <tr>
+              <td>{{ month }}</td>
+              <td>${{ result.revenue[month] | number: '1.0-0' }}</td>
+              <td>${{ result.expenses[month] | number: '1.0-0' }}</td>
+              <td>${{ result.profit[month] | number: '1.0-0' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+</div>
+
+}

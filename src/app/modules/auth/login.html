@@ -1,0 +1,24 @@
+<div class="auth-page">
+  <form appAutofillSync class="auth-card" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <h1>NOUS Estrategia</h1>
+    <p class="subtitle">Sign in to your workspace</p>
+
+    <label>
+      <span>Email</span>
+      <input type="email" formControlName="email" autocomplete="email" placeholder="you@company.com" />
+      <app-field-error [control]="email" [messages]="emailMessages" />
+    </label>
+
+    <label>
+      <span>Password</span>
+      <input type="password" formControlName="password" autocomplete="current-password" placeholder="••••••••" />
+      <app-field-error [control]="password" [messages]="passwordMessages" />
+    </label>
+
+    <button type="submit" [disabled]="isLoading()">
+      {{ isLoading() ? 'Signing in…' : 'Sign in' }}
+    </button>
+
+    <p class="footnote">No account? <a routerLink="/register">Create one</a></p>
+  </form>
+</div>

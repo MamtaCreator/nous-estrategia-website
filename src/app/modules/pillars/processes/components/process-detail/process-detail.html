@@ -1,0 +1,101 @@
+<app-pillar-nav [clientId]="clientId" />
+<a class="back" [routerLink]="['/app/clients', clientId, 'processes']">← Back to processes</a>
+
+@if (isLoading()) {
+  <p class="hint">Loading…</p>
+} @else if (loadFailed()) {
+  <p role="alert">This record could not be loaded. <button type="button" (click)="load()">Try again</button></p>
+} @else if (processService.selectedProcess(); as process) {
+  <div class="header">
+    <div>
+      <h1>{{ process.name }}</h1>
+      <p class="subtitle">
+        {{ process.category }} · <span class="status" [class]="process.status.toLowerCase()">{{ process.status }}</span>
+      </p>
+    </div>
+    @if (canWrite()) {
+      <button type="button" class="btn primary" (click)="diagnose()" [disabled]="isDiagnosing()">
+        {{ isDiagnosing() ? 'Diagnosing…' : 'Diagnose' }}
+      </button>
+    }
+  </div>
+
+  <app-process-visualization [process]="process" />
+  <div class="cards">
+    <div class="card">
+      <h3>Overview</h3>
+      <dl>
+        <dt>Description</dt>
+        <dd>{{ process.description || '—' }}</dd>
+        <dt>Total duration</dt>
+        <dd>{{ process.totalDurationMinutes }} min</dd>
+        <dt>Total cost / cycle</dt>
+        <dd>${{ process.totalCostPerCycle }}</dd>
+        <dt>Efficiency</dt>
+        <dd>{{ process.efficiency }}%</dd>
+        <dt>Bottlenecks</dt>
+        <dd>{{ process.bottleneckCount }} ({{ process.bottleneckSteps.join(', ') || 'none' }})</dd>
+        <dt>Potential savings / cycle</dt>
+        <dd>${{ process.totalPotentialSavingsPerCycle }}</dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <h3>Steps</h3>
+      <table class="steps-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Owner</th>
+            <th>Min</th>
+            <th>Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (step of process.steps; track step.id) {
+            <tr [class.bottleneck]="step.isBottleneck">
+              <td>{{ step.sequence }}</td>
+              <td>{{ step.name }} @if (step.isBottleneck) { <span class="bn-badge">Bottleneck</span> }</td>
+              <td>{{ step.owner || '—' }}</td>
+              <td>{{ step.durationMinutes }}</td>
+              <td>${{ step.costPerExecution }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card recommendations">
+    <div class="card-header">
+      <h3>Recommendations ({{ process.optimizationRecommendations.length }})</h3>
+      @if (canWrite() && !showRecommendationForm()) {
+        <button type="button" class="btn small" (click)="showRecommendationForm.set(true)">+ Add</button>
+      }
+    </div>
+
+    @if (showRecommendationForm()) {
+      <form class="rec-form" [formGroup]="recommendationForm" (ngSubmit)="onSubmitRecommendation()">
+    <app-form-errors [form]="recommendationForm" />
+        <input type="text" formControlName="recommendation" placeholder="Recommendation text" />
+        <input type="number" formControlName="potentialSavings" min="0" placeholder="Potential savings" />
+        <button type="submit" [disabled]="isSavingRecommendation()">
+          {{ isSavingRecommendation() ? 'Saving…' : 'Save' }}
+        </button>
+        <button type="button" (click)="showRecommendationForm.set(false)">Cancel</button>
+      </form>
+      <p class="hint small">Adding a recommendation with matching text updates its savings instead of duplicating it.</p>
+    }
+
+    @if (process.optimizationRecommendations.length === 0) {
+      <p class="hint">No recommendations yet.</p>
+    } @else {
+      <ul>
+        @for (rec of process.optimizationRecommendations; track rec) {
+          <li>{{ rec }}</li>
+        }
+      </ul>
+    }
+  </div>
+}

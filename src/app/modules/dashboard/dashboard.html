@@ -1,0 +1,3 @@
+<h1>Welcome{{ auth.currentUser()?.name ? ', ' + auth.currentUser()?.name : '' }}.</h1>
+<p class="lead">Your KPIs at a glance. Use the Clients tab to manage accounts, KPIs and dashboards.</p>
+<app-kpi-analytics />

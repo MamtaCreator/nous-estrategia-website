@@ -1,0 +1,108 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.header a {
+  color: #2b5fb0;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.hint {
+  color: #666;
+}
+
+.form-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 640px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.notice {
+  background: #fff2d9;
+  color: #8a5a00;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin: 0 0 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+input,
+select {
+  font: inherit;
+  padding: 9px 11px;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  font-weight: 400;
+}
+
+fieldset {
+  margin-top: 20px;
+  border: 1px solid #e2e6ee;
+  border-radius: 6px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+legend {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  padding: 0 6px;
+}
+
+.checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.footer {
+  margin-top: 24px;
+}
+
+.footer button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  background: #2b5fb0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.footer button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

@@ -1,0 +1,67 @@
+<div class="header">
+  <h1>{{ isEdit ? 'Edit project' : 'New project' }}</h1>
+  <a [routerLink]="isEdit ? ['/app/clients', clientId, 'projects', projectId] : ['/app/clients', clientId, 'projects']">← Back</a>
+</div>
+
+@if (isLoading()) {
+  <p class="hint">Loading…</p>
+} @else if (loadFailed()) {
+  <p role="alert">This project could not be loaded. Return to the project list and try again.</p>
+} @else {
+  <form class="form-card" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <app-form-errors [form]="form" />
+    <div class="grid">
+      <label class="span-2">
+        <span>Name</span>
+        <input type="text" formControlName="name" />
+      </label>
+
+      <label class="span-2">
+        <span>Description</span>
+        <textarea formControlName="description" rows="3"></textarea>
+      </label>
+
+      <label>
+        <span>Pillar</span>
+        <select formControlName="pillar">
+          @for (pillar of pillars; track pillar) {
+            <option [value]="pillar">{{ pillar }}</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        <span>Budget (optional)</span>
+        <input type="number" formControlName="budget" min="0" />
+      </label>
+
+      <label>
+        <span>Start date</span>
+        <input type="date" formControlName="startDate" />
+      </label>
+
+      <label>
+        <span>End date</span>
+        <input type="date" formControlName="endDate" />
+      </label>
+
+      <label class="span-2">
+        <span>Team member IDs (comma-separated GUIDs)</span>
+        <input type="text" formControlName="teamMemberIds" placeholder="guid-1, guid-2" />
+      </label>
+
+      @if (isEdit) {
+        <label>
+          <span>Progress % {{ hasDeliverables() ? '(derived from deliverables — read-only)' : '' }}</span>
+          <input type="number" formControlName="progress" min="0" max="100" [readonly]="hasDeliverables()" />
+        </label>
+      }
+    </div>
+
+    <div class="footer">
+      <button type="submit" [disabled]="isSaving()">
+        {{ isSaving() ? 'Saving…' : isEdit ? 'Save changes' : 'Create project' }}
+      </button>
+    </div>
+  </form>
+}

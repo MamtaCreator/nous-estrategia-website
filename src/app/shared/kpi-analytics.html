@@ -1,0 +1,124 @@
+@if (noClients()) {
+  <div class="state">
+    <p>No clients are assigned to you yet, so there are no KPIs to chart.</p>
+    @if (canSeed()) {
+      <button type="button" class="seed" (click)="loadSampleData()" [disabled]="seeding()">
+        {{ seeding() ? 'Creating sample data…' : 'Load sample data' }}
+      </button>
+      <p class="seed-note">
+        Creates one example client with KPIs, projects, finance, marketing, process and automation history.
+        You can edit or delete it like any other client.
+      </p>
+    }
+  </div>
+} @else if (failed()) {
+  <p class="state" role="alert">Could not load your KPI data.</p>
+} @else if (isLoading() && !summary()) {
+  <p class="state">Loading your KPIs…</p>
+} @else if (summary(); as s) {
+  <section class="dash" aria-label="KPI analytics">
+    <header class="top">
+      <h4>KPI analytics — {{ clientName() }}</h4>
+      @if (!clientId() && clients().length > 1) {
+        <select class="pick" aria-label="Client" (change)="selectClient($any($event.target).value)">
+          @for (c of clients(); track c.id) { <option [value]="c.id" [selected]="c.id === selectedClientId()">{{ c.companyName }}</option> }
+        </select>
+      }
+    </header>
+
+    @if (s.total === 0) {
+      <div class="state"><p>This client has no KPIs yet. Create some from the KPIs page.</p>@if (canSeed()) { <button type="button" class="seed" (click)="loadSampleData()" [disabled]="seeding()">{{ seeding() ? 'Creating sample data…' : 'Load sample data' }}</button> }</div>
+    } @else {
+      <div class="kpi-row">
+        <div class="panel gauge">
+          <svg viewBox="0 0 200 115" role="img" [attr.aria-label]="(onTargetPct() | number:'1.0-0') + '% of evaluated KPIs on target'">
+            <path d="M 20 100 A 80 80 0 0 1 180 100" class="g-track" />
+            <path [attr.d]="'M 20 100 A 80 80 0 0 1 ' + gaugeEnd().x + ' ' + gaugeEnd().y" class="g-fill" />
+            <text x="100" y="92" class="g-value">{{ onTargetPct() | number:'1.0-0' }}%</text>
+            <text x="100" y="108" class="g-label">KPIs on target</text>
+            <text x="20" y="114" class="g-tick">0%</text>
+            <text x="180" y="114" class="g-tick" text-anchor="end">100%</text>
+          </svg>
+        </div>
+        <div class="panel kpi"><strong>{{ s.total }}</strong><span>Total KPIs</span></div>
+        <div class="panel kpi"><strong>{{ s.green }}</strong><span>On target</span></div>
+        <div class="panel kpi"><strong>{{ s.red }}</strong><span>Off target · {{ s.amber }} at risk</span></div>
+      </div>
+
+      <div class="mid-row">
+        <div class="panel">
+          <h5>KPIs by category</h5>
+          @for (c of categories(); track c.name) {
+            <div class="hbar">
+              <span class="lbl">{{ c.name }}</span>
+              <div class="track"><div class="fill" [style.width.%]="(c.count / maxCategory()) * 100"></div></div>
+              <span class="val">{{ c.count }}</span>
+            </div>
+          }
+          <h5 class="gap">Attainment vs target</h5>
+          @for (a of attainment(); track a.name) {
+            <div class="hbar">
+              <span class="lbl" [attr.title]="a.name">{{ a.name }}</span>
+              <div class="track"><div class="fill" [style.width.%]="(a.pct / maxAttainment()) * 100"></div></div>
+              <span class="val">{{ a.pct | number:'1.0-0' }}%</span>
+            </div>
+          } @empty { <p class="muted">No KPI has both a value and a target yet.</p> }
+        </div>
+
+        <div class="panel">
+          <h5>
+            Trend
+            <select class="pick small" aria-label="KPI" (change)="selectKpi($any($event.target).value)">
+              @for (k of sortedKpis(); track k.id) { <option [value]="k.id" [selected]="k.id === selectedKpiId()">{{ k.name }}</option> }
+            </select>
+          </h5>
+          @if (linePoints().length) {
+            <svg viewBox="0 0 240 120" role="img" aria-label="KPI trend">
+              <polyline [attr.points]="linePath()" class="line" />
+              @for (p of linePoints(); track $index) {
+                <circle [attr.cx]="p.x" [attr.cy]="p.y" r="2.6" class="dot" />
+                <text [attr.x]="p.x" [attr.y]="p.y - 6" class="pt">{{ p.v | number:'1.0-1' }}</text>
+                <text [attr.x]="p.x" y="116" class="axis">{{ p.n }}</text>
+              }
+            </svg>
+          } @else { <p class="muted">No measurements in the last {{ days() }} days for this KPI.</p> }
+        </div>
+
+        <div class="panel">
+          <h5>Status mix</h5>
+          <svg viewBox="0 0 120 100" role="img" aria-label="KPI status distribution">
+            <g transform="rotate(-90 60 50)">
+              @for (x of statusSlices(); track x.label; let i = $index) {
+                <circle cx="60" cy="50" r="36" fill="none" stroke-width="14" [attr.stroke]="x.color"
+                  [attr.stroke-dasharray]="dash(x.pct)" [attr.stroke-dashoffset]="offset(i)" />
+              }
+            </g>
+          </svg>
+          <ul class="legend">
+            @for (x of statusSlices(); track x.label) { <li><i [style.background]="x.color"></i>{{ x.label }} · {{ x.count }}</li> }
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>KPI</th><th>Category</th><th>Current</th><th>Target</th><th>% of target</th><th>Status</th></tr></thead>
+          <tbody>
+            @for (k of sortedKpis(); track k.id) {
+              <tr>
+                <td>{{ k.name }}</td>
+                <td>{{ k.category }}</td>
+                <td>{{ value(k) }}</td>
+                <td>{{ k.targetValue ?? '—' }}</td>
+                <td>{{ k.percentageToTarget === null ? '—' : (k.percentageToTarget | number:'1.0-0') + '%' }}</td>
+                <td [class.hot]="k.status === 'Red'" [class.warm]="k.status === 'Amber'">{{ k.status ?? 'n/a' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        </div>
+      </div>
+    }
+  </section>
+}
