@@ -33,7 +33,6 @@ export interface HeroSlide {
 
       <div class="hc-body">
         <div class="hc-copy">
-          <div class="corner-bracket" aria-hidden="true"></div>
           <h1 class="h1">{{ i18n.t('hero.title') }}</h1>
           <p class="hc-sub">{{ i18n.t('hero.sub') }}</p>
         </div>
