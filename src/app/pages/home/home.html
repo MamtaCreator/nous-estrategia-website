@@ -1,6 +1,4 @@
-@for (h of heroes; track h.video) {
-  <app-hero-video [video]="h.video" [poster]="h.poster" [cue]="h.cue" />
-}
+<app-hero-carousel />
 
 <section class="band duo-band" id="about">
   <div class="inner duo">
@@ -90,8 +88,10 @@
       <p class="client-note">{{ i18n.t('clients.note') }}</p>
     </div>
     <div class="client-grid">
-      @for (c of clientSlots; track c) {
-        <div class="client-box">{{ i18n.t('clients.logo') }}</div>
+      @for (c of clients; track c.file) {
+        <div class="client-box">
+          <img [src]="'images/clients/' + c.file" [alt]="c.name" loading="lazy" decoding="async" />
+        </div>
       }
     </div>
   </div>

@@ -5,7 +5,7 @@ import { PILLARS } from '../../core/pillars';
 import { BRAND } from '../../core/site';
 import { BrainMark } from '../../shared/brain-mark';
 import { CtaSection } from '../../shared/cta-section';
-import { HeroVideo } from '../../shared/hero-video';
+import { HeroCarousel } from '../../shared/hero-carousel';
 import { Icon } from '../../shared/icon';
 import { AutoplayVideo } from '../../shared/autoplay-video';
 import { AnalyticsDashboard } from '../../shared/analytics-dashboard';
@@ -14,19 +14,12 @@ import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-home',
-  imports: [AnalyticsDashboard, KpiAnalytics, AutoplayVideo, RouterLink, BrainMark, CtaSection, HeroVideo, Icon],
+  imports: [AnalyticsDashboard, KpiAnalytics, AutoplayVideo, RouterLink, BrainMark, CtaSection, HeroCarousel, Icon],
   templateUrl: './home.html',
 })
 export class Home {
   protected readonly i18n = inject(I18n);
   protected readonly auth = inject(AuthService);
-
-  // Three hero options stacked for side-by-side comparison (per the Canva review board).
-  protected readonly heroes = [
-    { video: 'videos/hero-city2.mp4', poster: 'images/hero-poster2.jpg', cue: true },
-    { video: 'videos/about-dusk2.mp4', poster: 'images/about-dusk-poster2.jpg', cue: false },
-    { video: 'videos/office.mp4', poster: 'images/office-poster.jpg', cue: false },
-  ];
 
   protected readonly metrics = [
     { n: 1, color: BRAND.gold },
@@ -45,7 +38,17 @@ export class Home {
     { n: 3, color: BRAND.indigo },
     { n: 4, color: BRAND.violet },
   ];
-  protected readonly clientSlots = [1, 2, 3, 4, 5, 6];
+  /**
+   * Real client logos, replacing the six dashed placeholders.
+   *
+   * The name is carried alongside each file because it becomes the image's alt text: a logo conveys who
+   * the client is, so a screen reader that announced nothing here would lose the point of the section.
+   */
+  protected readonly clients = [
+    { name: 'Injured Workers Advocates', file: 'injured-workers-advocates.png' },
+    { name: 'Naranja Internet', file: 'naranja-internet.png' },
+    { name: 'Marshall', file: 'marshall.png' },
+  ];
 
   protected pad(n: number): string {
     return String(n).padStart(2, '0');
