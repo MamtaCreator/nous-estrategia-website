@@ -26,21 +26,47 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # Angular 22 refuses to build on anything below Node 22.22.3, which is what the run on 20 failed
+          # on. package.json now declares the same floor, so npm reports a mismatch before the build does.
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Angular application
-        run: npm run build -- --configuration production --base-href /
-
+      # Runs before the build because the build needs this step's base path.
       - name: Setup GitHub Pages
+        id: pages
         uses: actions/configure-pages@v5
+
+      - name: Work out the base href
+        id: base
+        run: |
+          # This site is served from https://mamtacreator.github.io/nous-estrategia-website/, so the app
+          # has to look for its scripts under that path. With a base href of "/" they are requested from
+          # the domain root instead, every one 404s, and the page renders blank.
+          #
+          # Taking the path from configure-pages rather than writing it in by hand means it stays correct
+          # if the repository is renamed or a custom domain is added later.
+          BASE="${{ steps.pages.outputs.base_path }}"
+          [ -z "$BASE" ] && BASE="/"
+          case "$BASE" in */) ;; *) BASE="$BASE/" ;; esac
+          echo "href=$BASE" >> "$GITHUB_OUTPUT"
+          echo "Building with base href $BASE"
+
+      - name: Build Angular application
+        run: npm run build -- --configuration production --base-href "${{ steps.base.outputs.href }}"
+
+      - name: Add a fallback for client-side routes
+        # GitHub Pages serves files, so it knows nothing about the app's routes: opening or refreshing any
+        # address other than the home page returns its 404 page. Serving the app from 404.html as well
+        # makes those addresses load the site instead.
+        run: cp dist/nous-app/browser/index.html dist/nous-app/browser/404.html
 
       - name: Upload website
         uses: actions/upload-pages-artifact@v3
         with:
+          # Angular writes the site into a browser/ subfolder.
           path: ./dist/nous-app/browser
 
   deploy:
