@@ -10,7 +10,7 @@ import { Component, input } from '@angular/core';
   template: `
     <img
       class="brain-mark"
-      src="/images/logo-brain.png"
+      src="images/logo-brain.png"
       alt=""
       aria-hidden="true"
       decoding="async"
