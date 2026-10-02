@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { I18n } from '../../core/i18n';
 import { PILLARS } from '../../core/pillars';
@@ -11,6 +11,7 @@ import { AutoplayVideo } from '../../shared/autoplay-video';
 import { AnalyticsDashboard } from '../../shared/analytics-dashboard';
 import { KpiAnalytics } from '../../shared/kpi-analytics';
 import { AuthService } from '../../core/services/auth.service';
+import { Seo } from '../../core/seo';
 
 @Component({
   selector: 'app-home',
@@ -20,6 +21,18 @@ import { AuthService } from '../../core/services/auth.service';
 export class Home {
   protected readonly i18n = inject(I18n);
   protected readonly auth = inject(AuthService);
+  private readonly seo = inject(Seo);
+
+  constructor() {
+    // Re-applied when the language changes, so a page switched to Spanish describes itself in Spanish.
+    effect(() => {
+      this.seo.apply({
+        title: this.i18n.t('seo.home.title'),
+        description: this.i18n.t('seo.home.desc'),
+        path: '/',
+      });
+    });
+  }
 
   protected readonly metrics = [
     { n: 1, color: BRAND.gold },

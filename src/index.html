@@ -1,14 +1,78 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>NOUS Estrategia</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Primary market is Colombia, so the tags a crawler reads before any JavaScript runs are in Spanish.
+       The app rewrites them per page and per language once it loads, for crawlers that execute JS. -->
+  <title>NOUS Estrategia | Finanzas, Marketing, Procesos e IA para empresas</title>
+  <meta name="description" content="Consultoría empresarial en Bogotá: finanzas inteligentes, marketing digital, control de procesos e inteligencia artificial en una sola estrategia. Solicita una consulta.">
+  <link rel="canonical" href="https://nousestrategia.com/">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <meta name="author" content="NOUS Estrategia">
+  <meta name="theme-color" content="#182236">
+
+  <!-- Open Graph and X cards. These have to be in the served HTML: WhatsApp, LinkedIn, Facebook and X
+       read the page without running JavaScript, so anything the app sets at runtime is invisible to them
+       and a shared link would show a bare URL. -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="NOUS Estrategia">
+  <meta property="og:locale" content="es_CO">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:url" content="https://nousestrategia.com/">
+  <meta property="og:title" content="NOUS Estrategia | Finanzas, Marketing, Procesos e IA">
+  <meta property="og:description" content="Finanzas inteligentes, marketing digital, control de procesos e inteligencia artificial, trabajando como una sola estrategia.">
+  <meta property="og:image" content="https://nousestrategia.com/images/og-cover.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="NOUS Estrategia">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="NOUS Estrategia | Finanzas, Marketing, Procesos e IA">
+  <meta name="twitter:description" content="Finanzas inteligentes, marketing digital, control de procesos e inteligencia artificial, trabajando como una sola estrategia.">
+  <meta name="twitter:image" content="https://nousestrategia.com/images/og-cover.png">
+
   <link rel="icon" type="image/png" href="images/logo-brain.png">
+  <link rel="apple-touch-icon" href="images/logo-brain.png">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Source+Serif+4:wght@500;600&display=swap">
+
+  <!-- Tells search engines what this organisation is, where it is and how to reach it, rather than
+       leaving them to infer it from the page text. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "NOUS Estrategia",
+    "url": "https://nousestrategia.com/",
+    "logo": "https://nousestrategia.com/images/logo-nous-full.png",
+    "image": "https://nousestrategia.com/images/og-cover.png",
+    "description": "Consultoría empresarial: finanzas inteligentes, marketing digital, control de procesos e inteligencia artificial.",
+    "email": "jenny.quevedo@nousestrategia.com",
+    "telephone": "+57 310 237 1221",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Bogotá",
+      "addressCountry": "CO"
+    },
+    "areaServed": "CO",
+    "availableLanguage": ["es", "en"],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Servicios",
+      "itemListElement": [
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Finanzas Inteligentes y Dashboards", "url": "https://nousestrategia.com/finance" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Marketing Digital y Contenido", "url": "https://nousestrategia.com/marketing" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Control Estratégico y Procesos", "url": "https://nousestrategia.com/process" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "IA y Automatización de Procesos", "url": "https://nousestrategia.com/ai" } }
+      ]
+    }
+  }
+  </script>
 </head>
 <body>
   <app-root></app-root>
