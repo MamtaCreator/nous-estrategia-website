@@ -1,20 +1,21 @@
 import { Component, ElementRef, afterRenderEffect, inject, signal, viewChildren } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { I18n } from '../core/i18n';
 import { BrainMark } from './brain-mark';
 
 /**
  * The homepage hero: one card per pillar, shown as a coverflow.
  *
- * Each card is labelled and links to its pillar, so the films are no longer four anonymous clips - it is
- * clear what each one refers to and the centre card is a way into that service.
+ * Each card is labelled and is itself a link to its pillar, so the films are no longer four anonymous
+ * clips: it is clear what each one refers to and a click anywhere on a card opens that service. The
+ * arrows, dots, swipe and arrow keys are there for looking through them without leaving the page.
  *
  * Only the centre film plays; the rest hold on their poster. That keeps simultaneous video decodes off
  * the main thread, which is what made the earlier stacked version heavy on phones.
  */
 @Component({
   selector: 'app-hero-carousel',
-  imports: [BrainMark, RouterLink],
+  imports: [BrainMark],
   template: `
     <section
       class="hero hero-carousel"
@@ -38,6 +39,9 @@ import { BrainMark } from './brain-mark';
         <div class="hc-stage">
           <div class="hc-track">
           @for (s of slides; track s.slug; let i = $index) {
+            <!-- Only the cards faded right out are taken out of play, with inert. The two either side are
+                 visible and now clickable, so marking them aria-hidden would hide a focusable link from a
+                 screen reader while leaving it in the tab order; inert removes them from both. -->
             <div
               class="hc-slide"
               [style.transform]="transformFor(i)"
@@ -45,7 +49,7 @@ import { BrainMark } from './brain-mark';
               [class.is-far]="isFar(i)"
               [style.zIndex]="zIndexFor(i)"
               [class.is-active]="i === active()"
-              [attr.aria-hidden]="i === active() ? null : 'true'"
+              [attr.inert]="isFar(i) ? '' : null"
               role="group"
               aria-roledescription="slide"
               [attr.aria-label]="(i + 1) + ' / ' + slides.length"
@@ -63,25 +67,30 @@ import { BrainMark } from './brain-mark';
                 <source [src]="s.video" type="video/mp4" />
               </video>
 
-              <!-- The centre card is a link into its pillar; the others only bring themselves forward, so
-                   a click on a half-turned card cannot navigate somewhere the person cannot properly see. -->
-              @if (i === active()) {
-                <a class="hc-label" [routerLink]="['/', s.slug]">
-                  <span class="hc-label-head">
-                    <span class="hc-label-num" [style.color]="s.color">{{ pad(s.num) }}</span>
-                    <span class="hc-label-title">{{ i18n.t('pillar.short.' + s.slug) }}</span>
-                    <span class="hc-label-more">{{ i18n.t('tiles.more') }}</span>
-                  </span>
-                  <!-- The same one-line summary the service tiles use further down the page, so a card
-                       says what the pillar actually does rather than only naming it. -->
-                  <span class="hc-label-body">{{ i18n.t('tiles.' + s.slug + '.body') }}</span>
-                </a>
-              } @else {
-                <button type="button" class="hc-bring" (click)="go(i)"
-                        [attr.aria-label]="i18n.t('pillar.short.' + s.slug)">
-                  <span class="hc-label-title dim">{{ i18n.t('pillar.short.' + s.slug) }}</span>
-                </button>
-              }
+              <!-- The whole card is the link, film included, so a click anywhere on it opens that
+                   pillar. A real href rather than routerLink alone: it keeps middle-click and
+                   open-in-new-tab working, survives with no JavaScript, and lets the handler drop a
+                   click that was really the end of a swipe. -->
+              <a
+                class="hc-card"
+                [href]="'/' + s.slug"
+                (click)="openPillar($event, s.slug)"
+              >
+                <span class="hc-label">
+                  @if (i === active()) {
+                    <span class="hc-label-head">
+                      <span class="hc-label-num" [style.color]="s.color">{{ pad(s.num) }}</span>
+                      <span class="hc-label-title">{{ i18n.t('pillar.short.' + s.slug) }}</span>
+                      <span class="hc-label-more">{{ i18n.t('tiles.more') }}</span>
+                    </span>
+                    <!-- The same one-line summary the service tiles use further down the page, so a card
+                         says what the pillar actually does rather than only naming it. -->
+                    <span class="hc-label-body">{{ i18n.t('tiles.' + s.slug + '.body') }}</span>
+                  } @else {
+                    <span class="hc-label-title dim">{{ i18n.t('pillar.short.' + s.slug) }}</span>
+                  }
+                </span>
+              </a>
             </div>
           }
           </div>
@@ -122,6 +131,7 @@ import { BrainMark } from './brain-mark';
 })
 export class HeroCarousel {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly router = inject(Router);
   protected readonly i18n = inject(I18n);
 
   /**
@@ -140,6 +150,8 @@ export class HeroCarousel {
   protected readonly active = signal(0);
   private readonly videos = viewChildren<ElementRef<HTMLVideoElement>>('vid');
   private touchX = 0;
+  /** Set by a swipe so the click the browser sends afterwards does not also open a pillar. */
+  private swiped = false;
 
   /**
    * How far a slide sits from the centre, counted the short way round.
@@ -231,6 +243,23 @@ export class HeroCarousel {
     });
   }
 
+  /**
+   * Opens the card's pillar.
+   *
+   * Left-click only, and never the click the browser sends at the end of a swipe: on a phone the cards
+   * are the swipe surface, so without that guard flicking through them would navigate away instead.
+   * Modified clicks are left alone so open-in-new-tab still works.
+   */
+  protected openPillar(event: MouseEvent, slug: string): void {
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    if (this.swiped) {
+      this.swiped = false;
+      return;
+    }
+    this.router.navigateByUrl('/' + slug);
+  }
+
   protected step(delta: number): void {
     this.go(this.active() + delta);
   }
@@ -247,12 +276,16 @@ export class HeroCarousel {
 
   protected onTouchStart(event: TouchEvent): void {
     this.touchX = event.changedTouches[0].clientX;
+    this.swiped = false;
   }
 
   protected onTouchEnd(event: TouchEvent): void {
     const travelled = event.changedTouches[0].clientX - this.touchX;
     // Enough of a swipe to be deliberate rather than a tap that wandered.
-    if (Math.abs(travelled) > 40) this.step(travelled < 0 ? 1 : -1);
+    if (Math.abs(travelled) > 40) {
+      this.swiped = true;
+      this.step(travelled < 0 ? 1 : -1);
+    }
   }
 
   protected jump(e: Event, id: string): void {
