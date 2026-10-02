@@ -269,9 +269,9 @@ a{color:#182236;text-decoration:none}
 .wrap .nav,.wrap .header-actions .btn{display:none}
 .wrap .menu-btn{display:flex}
 .wrap .metrics-row{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:28px}
-.wrap .metric{padding-left:0;padding-top:0}
+.wrap .metric{padding:0}
+.wrap .metrics-row{column-gap:24px;padding:40px 0}
 .wrap .client-grid{grid-template-columns:1fr;gap:18px}
-.wrap .client-band,.wrap .metrics-band .inner{padding:0}
 .wrap .client-band{padding:44px 0}
 .wrap .ph-band{height:230px}
 .wrap .cta-band{padding:60px 0}
