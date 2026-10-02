@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { I18n } from '../../core/i18n';
 import { PILLARS } from '../../core/pillars';
 import { BRAND } from '../../core/site';
@@ -13,7 +14,7 @@ import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-home',
-  imports: [AnalyticsDashboard, KpiAnalytics, AutoplayVideo, BrainMark, CtaSection, HeroCarousel, Icon],
+  imports: [AnalyticsDashboard, KpiAnalytics, AutoplayVideo, BrainMark, CtaSection, HeroCarousel, Icon, RouterLink],
   templateUrl: './home.html',
 })
 export class Home {

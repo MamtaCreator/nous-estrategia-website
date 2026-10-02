@@ -24,6 +24,11 @@ a{color:#182236;text-decoration:none}
 .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
 
 .kicker{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#2E74C9;font-weight:700;margin-bottom:16px}
+/* A section label points at its own section, the same place the header navigation sends you.
+   It keeps the kicker's colour rather than the near-black the global anchor rule would give it. */
+.kicker a{color:inherit;text-decoration:none}
+.kicker a:hover{text-decoration:underline;text-underline-offset:3px}
+.kicker a:focus-visible{outline:2px solid #2E74C9;outline-offset:3px;border-radius:2px}
 /* Source Serif 4, like every other display line on the site: the section headings, the pillar headlines,
    the tile and card titles, the metric figures. The hero was the one place still set in Montserrat, which
    is why it read as belonging to a different page. Weight 600 because that is what the family is loaded
