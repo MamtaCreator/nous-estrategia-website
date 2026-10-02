@@ -32,7 +32,7 @@ import { WhatsappIcon } from './whatsapp-icon';
             <ul class="foot-list">
               <li><a class="foot-link" [href]="contact.whatsappHref" target="_blank" rel="noopener">{{ i18n.t('footer.whatsappLine') }}</a></li>
               <li><a class="foot-link" [href]="'mailto:' + contact.email">{{ contact.email }}</a></li>
-              <li class="foot-link">{{ i18n.t('footer.city') }}</li>
+              <li><a class="foot-link" [href]="contact.mapsHref" target="_blank" rel="noopener">{{ i18n.t('footer.city') }}</a></li>
             </ul>
           </div>
           <div class="foot-col foot-wa">
