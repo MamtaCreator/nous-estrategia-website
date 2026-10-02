@@ -13,22 +13,22 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://nousestrategia.com/finance</loc>
+    <loc>https://nousestrategia.com/finance/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nousestrategia.com/marketing</loc>
+    <loc>https://nousestrategia.com/marketing/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nousestrategia.com/process</loc>
+    <loc>https://nousestrategia.com/process/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nousestrategia.com/ai</loc>
+    <loc>https://nousestrategia.com/ai/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

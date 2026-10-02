@@ -3,10 +3,11 @@ import { RouterLink } from '@angular/router';
 import { I18n } from '../core/i18n';
 import { AuthService } from '../core/services/auth.service';
 import { NAV_LINKS } from '../core/nav';
+import { FlagIcon } from './flag-icon';
 
 @Component({
   selector: 'app-site-header',
-  imports: [RouterLink],
+  imports: [RouterLink, FlagIcon],
   template: `
     <header class="site-header" id="top">
       <div class="header-inner">
@@ -20,9 +21,17 @@ import { NAV_LINKS } from '../core/nav';
         </nav>
         <div class="header-actions">
           <div class="lang-inline" role="group" aria-label="Language">
-            <button type="button" [attr.aria-pressed]="i18n.lang() === 'en'" (click)="i18n.lang.set('en')">EN</button>
+            <!-- The flag is decorative and the code is the label. No aria-label here on purpose: one
+                 would replace "EN" as the button's name, and a name that does not contain the visible
+                 text leaves anyone driving the page by voice saying "click EN" with nothing to hit.
+                 The group's own label already supplies the context. -->
+            <button type="button" [attr.aria-pressed]="i18n.lang() === 'en'" (click)="i18n.lang.set('en')">
+              <app-flag country="gb" />EN
+            </button>
             <span class="lang-sep">/</span>
-            <button type="button" [attr.aria-pressed]="i18n.lang() === 'es'" (click)="i18n.lang.set('es')">ES</button>
+            <button type="button" [attr.aria-pressed]="i18n.lang() === 'es'" (click)="i18n.lang.set('es')">
+              <app-flag country="co" />ES
+            </button>
           </div>
           <!-- Sign-in is hidden from the public navigation for now. Someone with a live session still gets
                their way back into the app; a visitor is offered no way in. The /login route itself is

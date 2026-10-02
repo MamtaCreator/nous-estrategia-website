@@ -1,4 +1,5 @@
-import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { AuthResult, LoginRequest, RegisterRequest } from '../models/auth.model';
@@ -37,6 +38,7 @@ function isExpired(token: string): boolean {
 // silent refresh: an expired/401'd session just signs the user out.
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly http = inject(HttpService);
   private expiryTimer?: ReturnType<typeof setTimeout>;
 
@@ -60,6 +62,7 @@ export class AuthService {
   });
 
   constructor() {
+    if (!this.isBrowser) return;
     this.scheduleExpiry();
     const syncSession = (event: StorageEvent) => {
       if (event.key === TOKEN_KEY || event.key === USER_KEY || event.key === null) {
@@ -89,6 +92,7 @@ export class AuthService {
   }
 
   private loadStoredUser(): User | null {
+    if (!this.isBrowser) return null;
     const token = localStorage.getItem(TOKEN_KEY);
     const rawUser = localStorage.getItem(USER_KEY);
     if (!token || !rawUser || isExpired(token)) {
@@ -148,6 +152,7 @@ export class AuthService {
   }
 
   getAccessToken(): string | null {
+    if (!this.isBrowser) return null;
     const token = localStorage.getItem(TOKEN_KEY);
     if (token && isExpired(token)) {
       this.logout();

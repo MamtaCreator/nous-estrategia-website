@@ -1,4 +1,4 @@
-import { Component, ElementRef, effect, inject, signal, viewChildren } from '@angular/core';
+import { Component, ElementRef, afterRenderEffect, inject, signal, viewChildren } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { I18n } from '../core/i18n';
 import { BrainMark } from './brain-mark';
@@ -121,6 +121,7 @@ import { BrainMark } from './brain-mark';
   styleUrl: './hero-carousel.css',
 })
 export class HeroCarousel {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   protected readonly i18n = inject(I18n);
 
   /**
@@ -170,7 +171,7 @@ export class HeroCarousel {
   constructor() {
     // Angular renders `muted` as an attribute but Chrome's autoplay policy reads the property, so it is
     // set in code. Without it the centre film stays frozen on its poster.
-    effect(() => {
+    afterRenderEffect(() => {
       const current = this.active();
       this.videos().forEach((ref, i) => {
         const el = ref.nativeElement;
@@ -212,6 +213,22 @@ export class HeroCarousel {
   protected go(index: number): void {
     const count = this.slides.length;
     this.active.set(((index % count) + count) % count);
+  }
+
+  /** Homepage service cards introduce the matching slide before opening its detail page. */
+  revealPillar(event: MouseEvent, slug: string): void {
+    // Preserve opening the detail link in a new tab and the non-JavaScript fallback.
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    const index = this.slides.findIndex(slide => slide.slug === slug);
+    if (index < 0) return;
+    event.preventDefault();
+    this.go(index);
+    const carousel = this.host.nativeElement.querySelector<HTMLElement>('.hero-carousel');
+    carousel?.focus({ preventScroll: true });
+    carousel?.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+      block: 'start',
+    });
   }
 
   protected step(delta: number): void {

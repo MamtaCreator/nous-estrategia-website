@@ -5,12 +5,12 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Primary market is Colombia, so the tags a crawler reads before any JavaScript runs are in Spanish.
-       The app rewrites them per page and per language once it loads, for crawlers that execute JS. -->
+  <!-- Public pages are prerendered with Spanish content and route-specific metadata.
+       The unrendered fallback stays noindex for private and unknown routes. -->
   <title>NOUS Estrategia | Finanzas, Marketing, Procesos e IA para empresas</title>
   <meta name="description" content="Consultoría empresarial en Bogotá: finanzas inteligentes, marketing digital, control de procesos e inteligencia artificial en una sola estrategia. Solicita una consulta.">
   <link rel="canonical" href="https://nousestrategia.com/">
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <meta name="robots" content="noindex, follow">
   <meta name="author" content="NOUS Estrategia">
   <meta name="theme-color" content="#182236">
 
@@ -43,7 +43,7 @@
 
   <!-- Tells search engines what this organisation is, where it is and how to reach it, rather than
        leaving them to infer it from the page text. -->
-  <script type="application/ld+json">
+  <script id="organization-schema" type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
@@ -60,15 +60,21 @@
       "addressCountry": "CO"
     },
     "areaServed": "CO",
-    "availableLanguage": ["es", "en"],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "telephone": "+57 310 237 1221",
+      "email": "jenny.quevedo@nousestrategia.com",
+      "availableLanguage": ["es", "en"]
+    },
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
       "name": "Servicios",
       "itemListElement": [
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Finanzas Inteligentes y Dashboards", "url": "https://nousestrategia.com/finance" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Marketing Digital y Contenido", "url": "https://nousestrategia.com/marketing" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Control Estratégico y Procesos", "url": "https://nousestrategia.com/process" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "IA y Automatización de Procesos", "url": "https://nousestrategia.com/ai" } }
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Finanzas Inteligentes y Dashboards", "url": "https://nousestrategia.com/finance/" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Marketing Digital y Contenido", "url": "https://nousestrategia.com/marketing/" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Control Estratégico y Procesos", "url": "https://nousestrategia.com/process/" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "IA y Automatización de Procesos", "url": "https://nousestrategia.com/ai/" } }
       ]
     }
   }

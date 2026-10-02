@@ -6,7 +6,7 @@ import { roleGuard } from './core/guards/role.guard';
 const pillarSlugs = PILLARS.map((p) => p.slug);
 
 export const routes: Routes = [
-  { path: '', title: 'NOUS Estrategia', loadComponent: () => import('./pages/home/home').then((m) => m.Home) },
+  { path: '', loadComponent: () => import('./pages/home/home').then((m) => m.Home) },
   { path: 'login', title: 'Sign in — NOUS Estrategia', loadComponent: () => import('./modules/auth/login').then((m) => m.Login) },
   {
     path: 'register',
@@ -149,14 +149,17 @@ export const routes: Routes = [
       },
     ],
   },
-  {
-    // /finance, /marketing, /process, /ai — one template, slug bound to the component input
-    matcher: (segments) =>
-      segments.length === 1 && pillarSlugs.includes(segments[0].path)
-        ? { consumed: segments, posParams: { slug: segments[0] } }
-        : null,
-    title: (route) => `NOUS Estrategia — ${route.params['slug']}`,
-    loadComponent: () => import('./pages/pillar/pillar').then((m) => m.Pillar),
-  },
-  { path: '**', redirectTo: '' },
+  ...pillarSlugs.map(slug => ({
+    path: slug,
+    data: { slug },
+    loadComponent: () => import('./pages/pillar/pillar').then(m => m.Pillar),
+  })),
+  // The spreadsheet workspace is deliberately not routed: it is finished but held back from the public
+  // site at the owner's instruction. Restoring it is this one route entry, nothing else.
+  // {
+  //   path: 'workspace',
+  //   title: 'Spreadsheet workspace — NOUS Estrategia',
+  //   loadComponent: () => import('./modules/workspace/workspace').then((m) => m.Workspace),
+  // },
+  { path: '**', title: 'Page not found — NOUS Estrategia', loadComponent: () => import('./pages/not-found').then(m => m.NotFound) },
 ];

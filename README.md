@@ -17,7 +17,11 @@ Open http://localhost:4200. Start the existing backend separately:
 dotnet run --project ../NousEstrategia.Backend/NousEstrategia.Api
 ```
 
-Development uses `http://localhost:5000/api`, matching the backend launch profile. Production uses `/api`; proxy this path to the backend and serve `index.html` for application routes. Environment files are in `src/environments`, with production replacement configured automatically.
+Development uses `http://localhost:5000/api`, matching the backend launch profile. Production uses `/api`; proxy this path to the backend. Serve the generated directory indexes for the five public routes and `index.csr.html` for CRM routes. Unknown paths should return HTTP 404 with the CSR shell. Environment files are in `src/environments`, with production replacement configured automatically.
+
+## SEO and static hosting
+
+Public pages are now prerendered during `npm run build`. Run `npm run test:seo` to check the generated HTML, or `npm run test:seo:browser` for browser checks as well (requires Microsoft Edge). Deployment and account-owner steps are in [SEO-HANDOFF.md](SEO-HANDOFF.md).
 
 ## Phase 1 behavior
 

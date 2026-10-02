@@ -1,4 +1,4 @@
-<app-hero-carousel />
+<app-hero-carousel #heroCarousel />
 
 <section class="band duo-band" id="about">
   <div class="inner duo">
@@ -52,7 +52,8 @@
     </div>
     <div class="tile-grid">
       @for (t of tiles; track t.slug) {
-        <a class="tile" [class.featured]="t.featured" [routerLink]="['/', t.slug]" [id]="t.slug">
+        <a class="tile" [class.featured]="t.featured" [href]="t.slug" [id]="t.slug"
+           (click)="heroCarousel.revealPillar($event, t.slug)">
           <span class="tile-icon" [style.color]="t.color"><app-icon [name]="t.icon" [size]="22" /></span>
           <span class="tile-label" [style.color]="t.color">{{ i18n.t('tiles.' + t.slug + '.label') }}</span>
           <span class="tile-title">{{ i18n.t('tiles.' + t.slug + '.title') }}</span>

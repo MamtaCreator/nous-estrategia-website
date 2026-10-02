@@ -1,11 +1,12 @@
-import { DOCUMENT } from '@angular/common';
-import { Injectable, effect, inject, signal } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { Injectable, PLATFORM_ID, effect, inject, signal } from '@angular/core';
 import { Lang, TRANSLATIONS } from './translations';
 
 const STORAGE_KEY = 'nous-lang';
 
 @Injectable({ providedIn: 'root' })
 export class I18n {
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly doc = inject(DOCUMENT);
   readonly lang = signal<Lang>(this.load());
 
@@ -13,7 +14,9 @@ export class I18n {
     effect(() => {
       const l = this.lang();
       this.doc.documentElement.lang = l;
-      try { localStorage.setItem(STORAGE_KEY, l); } catch { /* storage unavailable */ }
+      if (this.isBrowser) {
+        try { localStorage.setItem(STORAGE_KEY, l); } catch { /* storage unavailable */ }
+      }
     });
   }
 
@@ -21,6 +24,7 @@ export class I18n {
   t = (key: string): string => TRANSLATIONS[this.lang()][key] ?? TRANSLATIONS.en[key] ?? key;
 
   private load(): Lang {
+    if (!this.isBrowser) return 'es';
     // A choice already made always wins.
     try {
       const v = localStorage.getItem(STORAGE_KEY);

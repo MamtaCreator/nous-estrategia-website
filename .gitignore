@@ -42,3 +42,6 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Local verification output (screenshots, sample spreadsheets) - not part of the site.
+/artifacts

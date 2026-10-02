@@ -3,11 +3,8 @@
 User-agent: *
 Allow: /
 
-# The signed-in application is not public content: it needs an account, every page behind it is the same
-# shell, and having it in an index would only surface sign-in walls in search results.
-Disallow: /app
-Disallow: /login
-Disallow: /register
-Disallow: /workspace
+# Non-public pages carry noindex. Crawlers must be allowed to read that directive.
+# Authentication, not robots.txt, protects client data.
+Disallow: /api/
 
 Sitemap: https://nousestrategia.com/sitemap.xml

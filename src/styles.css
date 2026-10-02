@@ -84,6 +84,11 @@ a{color:#182236;text-decoration:none}
 .nav-link:hover{color:#2E74C9}
 .header-actions{display:flex;align-items:center;gap:18px}
 .lang-inline{display:flex;align-items:center;gap:6px}
+/* The flag and its code read as one control rather than two things side by side. */
+.lang-inline button{display:inline-flex;align-items:center;gap:5px}
+/* A flag for the language you are not on is dimmed with the code, so the active one still stands out. */
+.lang-inline button[aria-pressed="false"] app-flag{opacity:.55}
+.lang-inline button:hover app-flag{opacity:1}
 .lang-inline button{appearance:none;background:none;border:0;font:inherit;font-size:11.5px;font-weight:700;
  letter-spacing:.08em;color:#7B8290;cursor:pointer;padding:6px 2px;min-height:32px}
 .lang-inline button[aria-pressed="true"]{color:#182236;border-bottom:2px solid #2E74C9}

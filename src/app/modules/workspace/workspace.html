@@ -1,0 +1,131 @@
+<app-site-header />
+
+<main class="ws">
+  <div class="ws-inner">
+
+    @if (!session.name()) {
+      <!-- A name, not a login. There is no account here and nothing of anyone else's to protect: the
+           spreadsheet is read on this device and never leaves it. -->
+      <section class="ws-gate">
+        <h1 class="h2">Spreadsheet workspace</h1>
+        <p class="ws-lede">Open a budget spreadsheet and read it as a dashboard.</p>
+
+        <form (ngSubmit)="signIn()">
+          <label class="ws-field">
+            <span>Your name</span>
+            <input type="text" name="name" autocomplete="name" placeholder="Jenny Quevedo"
+                   [ngModel]="typedName()" (ngModelChange)="typedName.set($event)" />
+          </label>
+          <button type="submit" class="btn btn-primary" [disabled]="!typedName().trim()">Continue</button>
+        </form>
+
+        <p class="ws-note">
+          This is a demo workspace, not an account. Files you open stay on this device — nothing is
+          uploaded and nothing is saved.
+        </p>
+      </section>
+    } @else {
+
+      <header class="ws-head">
+        <div>
+          <h1 class="h2">Spreadsheet workspace</h1>
+          <p class="ws-lede">Signed in as {{ session.name() }}</p>
+        </div>
+        <div class="ws-head-actions">
+          <a class="ws-link" routerLink="/">Back to site</a>
+          <button type="button" class="ws-link" (click)="signOut()">Sign out</button>
+        </div>
+      </header>
+
+      <!-- 1. the file -->
+      <section class="ws-card">
+        <h2 class="ws-step"><span class="ws-num">1</span> Choose a spreadsheet</h2>
+        <label class="ws-drop">
+          <input type="file" accept=".xlsx,.xls,.csv" (change)="onFile($event)" />
+          <span class="ws-drop-text">
+            {{ fileName() || 'Excel (.xlsx, .xls) or CSV' }}
+          </span>
+        </label>
+        @if (reading()) { <p class="ws-hint">Reading…</p> }
+        @if (error()) { <p class="ws-error" role="alert">{{ error() }}</p> }
+
+        @if (tables().length > 1) {
+          <label class="ws-field inline">
+            <span>Sheet</span>
+            <select (change)="selectTable(+$any($event.target).value)">
+              @for (t of tables(); track t.name; let i = $index) {
+                <option [value]="i" [selected]="i === tableIndex()">{{ t.name }}</option>
+              }
+            </select>
+          </label>
+        }
+      </section>
+
+      <!-- 2. the columns -->
+      @if (table(); as t) {
+        <section class="ws-card">
+          <h2 class="ws-step"><span class="ws-num">2</span> Match the columns</h2>
+          <p class="ws-hint">
+            Your headings are on the left of each list. Anything already selected is a guess — change it if
+            it is wrong.
+          </p>
+
+          <div class="ws-map">
+            @for (f of fields; track f.key) {
+              <label class="ws-field">
+                <span>{{ f.label }}</span>
+                <!-- [selected] per option, not [value] on the select: with the options rendered by @for the
+                     select's value is applied before they exist, so the guess would not show. -->
+                <select (change)="setColumn(f.key, $any($event.target).value)">
+                  <option [value]="-1" [selected]="columns()[f.key] === -1">— not set —</option>
+                  @for (h of t.headers; track $index; let i = $index) {
+                    <option [value]="i" [selected]="i === columns()[f.key]">{{ h }}</option>
+                  }
+                </select>
+                @if (columns()[f.key] >= 0 && preview(columns()[f.key])) {
+                  <small class="ws-preview">{{ preview(columns()[f.key]) }}</small>
+                } @else {
+                  <small class="ws-preview muted">{{ f.hint }}</small>
+                }
+              </label>
+            }
+          </div>
+        </section>
+
+        <!-- 3. the result -->
+        @if (ready()) {
+          <section class="ws-card">
+            <h2 class="ws-step"><span class="ws-num">3</span> What was read</h2>
+            <div class="ws-stats">
+              <div><strong>{{ summary().rows }}</strong><span>rows used</span></div>
+              <div><strong>{{ summary().categories }}</strong><span>categories</span></div>
+              <div><strong>{{ summary().from }}–{{ summary().to }}</strong><span>months</span></div>
+              <div><strong>{{ summary().budget | number:'1.0-0' }}</strong><span>total budget</span></div>
+              <div><strong>{{ summary().spent | number:'1.0-0' }}</strong><span>total spent</span></div>
+            </div>
+
+            @if (skipped().length) {
+              <details class="ws-skipped">
+                <summary>{{ skipped().length }} row(s) were skipped</summary>
+                <ul>
+                  @for (s of skipped().slice(0, 25); track s.row) {
+                    <li>Row {{ s.row }} — {{ s.reason }}</li>
+                  }
+                </ul>
+                @if (skipped().length > 25) { <p class="ws-hint">…and {{ skipped().length - 25 }} more.</p> }
+              </details>
+            }
+          </section>
+
+          @if (rows().length) {
+            <app-analytics-dashboard [rows]="rows()" [title]="fileName() + ' · ' + t.name" />
+          } @else {
+            <p class="ws-error" role="alert">
+              No usable rows were found. Check that the month and figure columns point at the right headings.
+            </p>
+          }
+        }
+      }
+    }
+  </div>
+</main>

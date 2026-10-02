@@ -1,0 +1,171 @@
+.ws {
+  background: #F7F8FA;
+  min-height: 100vh;
+  padding: 108px 0 80px;
+}
+.ws-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* --- the name gate ------------------------------------------------------- */
+
+.ws-gate {
+  background: #fff;
+  border: 1px solid #E6E8EC;
+  border-radius: 12px;
+  padding: 44px;
+  max-width: 520px;
+  margin: 40px auto;
+}
+.ws-gate form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+.ws-lede { color: #7B8290; margin-top: 8px; }
+.ws-note {
+  margin-top: 22px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #7B8290;
+  border-top: 1px solid #E6E8EC;
+  padding-top: 16px;
+}
+
+/* --- header -------------------------------------------------------------- */
+
+.ws-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.ws-head-actions { display: flex; gap: 18px; align-items: center; }
+.ws-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2E74C9;
+  cursor: pointer;
+  text-decoration: none;
+}
+.ws-link:hover { text-decoration: underline; }
+
+/* --- cards --------------------------------------------------------------- */
+
+.ws-card {
+  background: #fff;
+  border: 1px solid #E6E8EC;
+  border-radius: 12px;
+  padding: 24px 26px;
+}
+.ws-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #182236;
+  margin: 0 0 14px;
+}
+.ws-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(120deg, #2E74C9, #4A4FA0);
+  color: #fff;
+  font-size: 12px;
+  flex: none;
+}
+
+.ws-field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #182236; }
+.ws-field.inline { flex-direction: row; align-items: center; gap: 10px; margin-top: 14px; }
+.ws-field input[type='text'],
+.ws-field select {
+  font: inherit;
+  font-weight: 400;
+  padding: 9px 11px;
+  border: 1px solid #D8DBE2;
+  border-radius: 7px;
+  background: #fff;
+  color: #182236;
+  min-width: 0;
+}
+.ws-field input:focus, .ws-field select:focus { outline: 2px solid #2E74C9; outline-offset: 1px; }
+
+/* --- file picker --------------------------------------------------------- */
+
+.ws-drop {
+  display: block;
+  border: 2px dashed #D8DBE2;
+  border-radius: 10px;
+  padding: 28px;
+  text-align: center;
+  cursor: pointer;
+  background: #FAFBFC;
+  transition: border-color .2s, background .2s;
+}
+.ws-drop:hover { border-color: #2E74C9; background: #F4F8FD; }
+.ws-drop input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.ws-drop-text { font-size: 13px; color: #7B8290; font-weight: 600; }
+
+/* --- column mapping ------------------------------------------------------ */
+
+.ws-map {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+.ws-preview {
+  font-weight: 400;
+  font-size: 11px;
+  color: #2E74C9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ws-preview.muted { color: #9AA1AE; }
+
+/* --- summary ------------------------------------------------------------- */
+
+.ws-stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+}
+.ws-stats div { display: flex; flex-direction: column; gap: 3px; }
+.ws-stats strong { font-size: 22px; color: #182236; font-variant-numeric: tabular-nums; }
+.ws-stats span { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #7B8290; }
+
+.ws-skipped { margin-top: 18px; font-size: 13px; }
+.ws-skipped summary { cursor: pointer; color: #B25E00; font-weight: 600; }
+.ws-skipped ul { margin: 10px 0 0 18px; color: #7B8290; line-height: 1.7; }
+
+.ws-hint { font-size: 12px; color: #7B8290; margin: 10px 0 0; }
+.ws-error { font-size: 13px; color: #B3363F; font-weight: 600; margin: 12px 0 0; }
+
+/* --- narrow screens ------------------------------------------------------ */
+
+@media (max-width: 900px) {
+  .ws { padding: 88px 0 56px; }
+  .ws-inner { padding: 0 20px; }
+  .ws-gate { padding: 28px; margin: 16px auto; }
+  .ws-map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ws-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .ws-map { grid-template-columns: 1fr; }
+}
