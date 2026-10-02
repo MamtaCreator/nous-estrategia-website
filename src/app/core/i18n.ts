@@ -21,10 +21,21 @@ export class I18n {
   t = (key: string): string => TRANSLATIONS[this.lang()][key] ?? TRANSLATIONS.en[key] ?? key;
 
   private load(): Lang {
+    // A choice already made always wins.
     try {
       const v = localStorage.getItem(STORAGE_KEY);
       if (v === 'en' || v === 'es') return v;
     } catch { /* storage unavailable */ }
+
+    // Otherwise follow the browser. Starting everyone in English meant a Spanish-speaking visitor was
+    // offered Chrome's machine translation instead of the site's own Spanish - which is how "Clientes"
+    // reached the screen as "Clientela" and "Analítica de Datos" as "Análisis de datos". The wording here
+    // is written; the translation was not.
+    try {
+      const preferred = navigator.languages?.[0] ?? navigator.language;
+      if (preferred?.toLowerCase().startsWith('es')) return 'es';
+    } catch { /* navigator unavailable, e.g. during server-side rendering */ }
+
     return 'en';
   }
 }

@@ -1,9 +1,9 @@
 @if (failed() && !data()) {
   <p class="state" role="alert">{{ t('demo.unavailable') }} <button type="button" (click)="load()">{{ t('demo.retry') }}</button></p>
 } @else if (data(); as d) {
-  <section class="dash" [class.busy]="busy()" [attr.aria-label]="t('demo.title')">
+  <section class="dash" [class.busy]="busy()" [attr.aria-label]="title() || t('demo.title')">
     <header class="top">
-      <h4>{{ t('demo.title') }}</h4>
+      <h4>{{ title() || t('demo.title') }}</h4>
       <span class="period">{{ period(d) }}</span>
     </header>
 

@@ -14,7 +14,7 @@ export interface DemoSpendRow {
   spent: number;
 }
 
-export const DEMO_YEAR = 2019;
+export const DEMO_YEAR = 2026;
 export const DEMO_MIN_MONTH = 1;
 export const DEMO_MAX_MONTH = 8;
 

@@ -1,7 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { I18n } from '../core/i18n';
-import { Viewport } from '../core/viewport';
 import { AuthService } from '../core/services/auth.service';
 import { NAV_LINKS } from '../core/nav';
 
@@ -12,7 +11,7 @@ import { NAV_LINKS } from '../core/nav';
     <header class="site-header" id="top">
       <div class="header-inner">
         <a class="logo" routerLink="/" aria-label="NOUS Estrategia — home">
-          <img class="logo-img" src="images/logo-nous.png" alt="NOUS Estrategia" width="961" height="293">
+          <img class="logo-img" src="images/logo-nous-full.png" alt="NOUS Estrategia" width="297" height="150">
         </a>
         <nav class="nav">
           @for (l of links; track l.fragment) {
@@ -24,11 +23,6 @@ import { NAV_LINKS } from '../core/nav';
             <button type="button" [attr.aria-pressed]="i18n.lang() === 'en'" (click)="i18n.lang.set('en')">EN</button>
             <span class="lang-sep">/</span>
             <button type="button" [attr.aria-pressed]="i18n.lang() === 'es'" (click)="i18n.lang.set('es')">ES</button>
-          </div>
-          <div class="lang-inline view-inline" role="group" aria-label="Viewport">
-            <button type="button" [attr.aria-pressed]="viewport.mode() === 'desktop'" (click)="viewport.mode.set('desktop')">DESKTOP</button>
-            <span class="lang-sep">/</span>
-            <button type="button" [attr.aria-pressed]="viewport.mode() === 'mobile'" (click)="viewport.mode.set('mobile')">MOBILE</button>
           </div>
           <!-- Sign-in is hidden from the public navigation for now. Someone with a live session still gets
                their way back into the app; a visitor is offered no way in. The /login route itself is
@@ -50,11 +44,6 @@ import { NAV_LINKS } from '../core/nav';
         @if (auth.isAuthenticated()) {
           <a class="mobile-link" routerLink="/app" (click)="menuOpen.set(false)">{{ i18n.t('nav.app') }}</a>
         }
-        <div class="lang-inline view-panel" role="group" aria-label="Viewport">
-          <button type="button" [attr.aria-pressed]="viewport.mode() === 'desktop'" (click)="viewport.mode.set('desktop'); menuOpen.set(false)">DESKTOP</button>
-          <span class="lang-sep">/</span>
-          <button type="button" [attr.aria-pressed]="viewport.mode() === 'mobile'" (click)="viewport.mode.set('mobile')">MOBILE</button>
-        </div>
         <a class="btn btn-primary btn-sm" routerLink="/" fragment="contact" (click)="menuOpen.set(false)">{{ i18n.t('nav.consult') }}</a>
       </nav>
     </header>`,
@@ -62,7 +51,6 @@ import { NAV_LINKS } from '../core/nav';
 })
 export class SiteHeader {
   protected readonly i18n = inject(I18n);
-  protected readonly viewport = inject(Viewport);
   protected readonly auth = inject(AuthService);
   protected readonly links = NAV_LINKS;
   protected readonly menuOpen = signal(false);

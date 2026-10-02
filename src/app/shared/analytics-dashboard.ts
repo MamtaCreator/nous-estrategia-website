@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { I18n } from '../core/i18n';
 import { DEMO_MAX_MONTH, DEMO_MIN_MONTH, DEMO_SPEND_ROWS, DEMO_YEAR, DemoSpendRow } from './analytics-demo-data';
 
@@ -48,6 +48,18 @@ const CIRCUMFERENCE = 2 * Math.PI * 36;
 export class AnalyticsDashboard {
   protected readonly i18n = inject(I18n);
 
+  /**
+   * The figures to chart. Left unset it shows the bundled demo dataset, which is what the public home
+   * page wants; the workspace passes the rows read from an uploaded spreadsheet instead.
+   *
+   * Everything below - totals, the category table, the monthly, quarterly and semester views, and all the
+   * filtering - is derived from these rows, so the same component serves both without knowing the source.
+   */
+  readonly rows = input<readonly DemoSpendRow[]>(DEMO_SPEND_ROWS);
+
+  /** Heading above the chart. Defaults to the demo dataset's name; the workspace passes the sheet's own. */
+  readonly title = input<string>('');
+
   protected readonly data = signal<SampleAnalytics | null>(null);
   protected readonly failed = signal(false);
   protected readonly busy = signal(false);
@@ -63,7 +75,20 @@ export class AnalyticsDashboard {
   });
 
   constructor() {
-    this.load();
+    // Rebuild whenever the rows change: the workspace swaps in a new sheet without recreating the chart.
+    //
+    // Only rows() is tracked. The rest runs untracked because load() reads the filter signals, so without
+    // this the effect would also re-run whenever a filter changed - and then clear it, making a click on
+    // a category appear to do nothing.
+    effect(() => {
+      this.rows();
+      untracked(() => {
+        this.category.set(null);
+        this.fromMonth.set(null);
+        this.toMonth.set(null);
+        this.load();
+      });
+    });
   }
 
   protected load(): void {
@@ -78,9 +103,12 @@ export class AnalyticsDashboard {
    *  - the headline totals honour both at once.
    */
   private build(): SampleAnalytics {
-    const rows = DEMO_SPEND_ROWS;
-    const minMonth = DEMO_MIN_MONTH;
-    const maxMonth = DEMO_MAX_MONTH;
+    const rows = this.rows();
+    // An uploaded sheet may cover any span of months, so the range comes from the rows themselves and
+    // only falls back to the demo bounds when there is nothing to measure.
+    const months = rows.map((r) => r.month);
+    const minMonth = months.length ? Math.min(...months) : DEMO_MIN_MONTH;
+    const maxMonth = months.length ? Math.max(...months) : DEMO_MAX_MONTH;
 
     let from = clamp(this.fromMonth() ?? minMonth, minMonth, maxMonth);
     let to = clamp(this.toMonth() ?? maxMonth, minMonth, maxMonth);
@@ -188,8 +216,15 @@ export class AnalyticsDashboard {
   protected n(value: number, digits = 0): string {
     return new Intl.NumberFormat(this.i18n.lang(), { maximumFractionDigits: digits, minimumFractionDigits: digits }).format(value);
   }
+  /**
+   * The demo dataset uses fixed keys with translations behind them ("base_salary" reads as "Base salary"
+   * or "Sueldo base"). An uploaded spreadsheet brings whatever the person wrote in their own sheet, and
+   * there is no translation for that - so an unknown key is shown exactly as it came in, rather than
+   * leaking the lookup key onto the screen as "demo.cat.Sueldo base".
+   */
   protected catName(key: string): string {
-    return this.i18n.t('demo.cat.' + key);
+    const translated = this.i18n.t('demo.cat.' + key);
+    return translated === 'demo.cat.' + key ? key : translated;
   }
   protected monthName(month: number, style: 'short' | 'long' = 'short'): string {
     return new Intl.DateTimeFormat(this.i18n.lang(), { month: style }).format(new Date(2019, month - 1, 1));

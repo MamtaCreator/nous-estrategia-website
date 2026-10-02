@@ -47,7 +47,24 @@
       <div class="duo-copy">
         <p class="kicker">{{ i18n.t('pillar.approach') }}</p>
         <h2 class="h2">{{ i18n.t('pillar.approachTitle') }}</h2>
-        <p class="lede">{{ i18n.t('about.lede') }}</p>
+        @if (c.approach; as a) {
+          <!-- This pillar's own method. Without it the page falls back to the shared sentence below,
+               which reads the same on every pillar. -->
+          <ol class="approach-steps">
+            @for (step of a.steps; track step[0]) {
+              <li>
+                <span class="approach-n" [style.color]="p.color">{{ step[0] }}</span>
+                <div>
+                  <h3 class="approach-title">{{ step[1] }}</h3>
+                  <p class="approach-body">{{ step[2] }}</p>
+                </div>
+              </li>
+            }
+          </ol>
+          <p class="approach-closing">{{ a.closing }}</p>
+        } @else {
+          <p class="lede">{{ i18n.t('about.lede') }}</p>
+        }
       </div>
     </div>
   </section>

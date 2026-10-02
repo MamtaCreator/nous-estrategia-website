@@ -1,22 +1,20 @@
-import { Component, ElementRef, computed, effect, inject, signal, viewChildren } from '@angular/core';
+import { Component, ElementRef, effect, inject, signal, viewChildren } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { I18n } from '../core/i18n';
 import { BrainMark } from './brain-mark';
 
-export interface HeroSlide {
-  video: string;
-  poster: string;
-}
-
 /**
- * The homepage hero: the three films shown as a coverflow rather than stacked one below the other.
+ * The homepage hero: one card per pillar, shown as a coverflow.
  *
- * Only the centre film plays. The others are paused on their poster, which keeps three simultaneous video
- * decodes off the main thread — the reason the stacked version was heavy on phones — and means the page
- * starts with one decode instead of three.
+ * Each card is labelled and links to its pillar, so the films are no longer four anonymous clips - it is
+ * clear what each one refers to and the centre card is a way into that service.
+ *
+ * Only the centre film plays; the rest hold on their poster. That keeps simultaneous video decodes off
+ * the main thread, which is what made the earlier stacked version heavy on phones.
  */
 @Component({
   selector: 'app-hero-carousel',
-  imports: [BrainMark],
+  imports: [BrainMark, RouterLink],
   template: `
     <section
       class="hero hero-carousel"
@@ -38,18 +36,19 @@ export interface HeroSlide {
         </div>
 
         <div class="hc-stage">
-          @for (s of slides; track s.video; let i = $index) {
+          <div class="hc-track">
+          @for (s of slides; track s.slug; let i = $index) {
             <div
               class="hc-slide"
               [style.transform]="transformFor(i)"
-              [style.opacity]="i === active() ? 1 : 0.55"
+              [style.opacity]="opacityFor(i)"
+              [class.is-far]="isFar(i)"
               [style.zIndex]="zIndexFor(i)"
               [class.is-active]="i === active()"
               [attr.aria-hidden]="i === active() ? null : 'true'"
-              [attr.role]="'group'"
-              [attr.aria-roledescription]="'slide'"
+              role="group"
+              aria-roledescription="slide"
               [attr.aria-label]="(i + 1) + ' / ' + slides.length"
-              (click)="i === active() ? null : go(i)"
             >
               <video
                 #vid
@@ -63,8 +62,24 @@ export interface HeroSlide {
               >
                 <source [src]="s.video" type="video/mp4" />
               </video>
+
+              <!-- The centre card is a link into its pillar; the others only bring themselves forward, so
+                   a click on a half-turned card cannot navigate somewhere the person cannot properly see. -->
+              @if (i === active()) {
+                <a class="hc-label" [routerLink]="['/', s.slug]">
+                  <span class="hc-label-num" [style.color]="s.color">{{ pad(s.num) }}</span>
+                  <span class="hc-label-title">{{ i18n.t('pillar.short.' + s.slug) }}</span>
+                  <span class="hc-label-more">{{ i18n.t('tiles.more') }}</span>
+                </a>
+              } @else {
+                <button type="button" class="hc-bring" (click)="go(i)"
+                        [attr.aria-label]="i18n.t('pillar.short.' + s.slug)">
+                  <span class="hc-label-title dim">{{ i18n.t('pillar.short.' + s.slug) }}</span>
+                </button>
+              }
             </div>
           }
+          </div>
 
           <button type="button" class="hc-arrow prev" (click)="step(-1)" [attr.aria-label]="i18n.t('hero.prev')">
             <span aria-hidden="true">&#8249;</span>
@@ -75,7 +90,7 @@ export interface HeroSlide {
         </div>
 
         <div class="hc-dots" role="tablist">
-          @for (s of slides; track s.video; let i = $index) {
+          @for (s of slides; track s.slug; let i = $index) {
             <button
               type="button"
               class="hc-dot"
@@ -90,7 +105,7 @@ export interface HeroSlide {
 
         <div class="hero-quick-links">
           <a class="hero-quick-link" href="#about" (click)="jump($event, 'about')">{{ i18n.t('hero.who') }}</a>
-          <a class="hero-quick-link" href="#services" (click)="jump($event, 'services')">{{ i18n.t('hero.stories') }}</a>
+          <a class="hero-quick-link" href="#clients" (click)="jump($event, 'clients')">{{ i18n.t('hero.stories') }}</a>
           <a class="hero-quick-link" href="#contact" (click)="jump($event, 'contact')">{{ i18n.t('hero.contact') }}</a>
         </div>
       </div>
@@ -103,10 +118,17 @@ export interface HeroSlide {
 export class HeroCarousel {
   protected readonly i18n = inject(I18n);
 
-  protected readonly slides: HeroSlide[] = [
-    { video: 'videos/hero-city2.mp4', poster: 'images/hero-poster2.jpg' },
-    { video: 'videos/about-dusk2.mp4', poster: 'images/about-dusk-poster2.jpg' },
-    { video: 'videos/office.mp4', poster: 'images/office-poster.jpg' },
+  /**
+   * One card per pillar, keeping the films already used on the home page and adding a fourth so that
+   * Marketing and AI are represented too. They are all films, so every card behaves the same.
+   */
+  protected readonly slides = [
+    // 01 the city buildings, and 03 the one with the printed charts, both as specified. 02 and 04 were
+    // left open, so they take the creative session and the pair working at a screen.
+    { slug: 'finance', num: 1, color: '#2E74C9', video: 'videos/hero-city2.mp4', poster: 'images/hero-poster2.jpg' },
+    { slug: 'marketing', num: 2, color: '#6EC6E0', video: 'videos/collab-board2.mp4', poster: 'images/collab-poster2.jpg' },
+    { slug: 'process', num: 3, color: '#4A4FA0', video: 'videos/office.mp4', poster: 'images/office-poster.jpg' },
+    { slug: 'ai', num: 4, color: '#7C5AA6', video: 'videos/team-laptop.mp4', poster: 'images/team-laptop-poster.jpg' },
   ];
 
   protected readonly active = signal(0);
@@ -135,7 +157,9 @@ export class HeroCarousel {
     if (offset === 0) return 'translateX(0) rotateY(0deg) scale(1)';
     const direction = offset < 0 ? -1 : 1;
     const depth = Math.min(Math.abs(offset), 2);
-    return `translateX(${direction * (52 + (depth - 1) * 14)}%) rotateY(${-direction * 34}deg) scale(${1 - depth * 0.16})`;
+    // Pushed further out and turned harder than before: at 52% the neighbours sat across the centre card,
+    // hiding its label and covering the arrows. They now clear it and read as cards behind, not on top.
+    return `translateX(${direction * (72 + (depth - 1) * 16)}%) rotateY(${-direction * 42}deg) scale(${1 - depth * 0.2})`;
   }
 
   constructor() {
@@ -156,9 +180,28 @@ export class HeroCarousel {
     });
   }
 
+  /**
+   * Only the centre card and its two immediate neighbours are shown. With four cards the fourth would sit
+   * behind a neighbour on the same side, which reads as clutter rather than depth - so it is faded out
+   * entirely and waits its turn.
+   */
+  protected opacityFor(index: number): number {
+    const depth = Math.abs(this.offsetOf(index));
+    return depth === 0 ? 1 : depth === 1 ? 0.5 : 0;
+  }
+
+  /** A faded card must not be clickable, or it would catch clicks meant for what is visible. */
+  protected isFar(index: number): boolean {
+    return Math.abs(this.offsetOf(index)) > 1;
+  }
+
   /** Nearer the centre means nearer the viewer, so the fan overlaps the right way round. */
   protected zIndexFor(index: number): number {
     return 3 - Math.abs(this.offsetOf(index));
+  }
+
+  protected pad(n: number): string {
+    return String(n).padStart(2, '0');
   }
 
   protected go(index: number): void {

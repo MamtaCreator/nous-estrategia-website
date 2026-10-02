@@ -1,5 +1,19 @@
 import { Lang } from './translations';
 
+/**
+ * One numbered step of a pillar's method, as [number, title, body].
+ *
+ * A tuple to match `cards` in the same file, and the number is text rather than a figure so the leading
+ * zero in "01" survives.
+ */
+export type ApproachStep = [string, string, string];
+
+export interface PillarApproach {
+  steps: ApproachStep[];
+  /** The line that closes the section, stating what the work is ultimately for. */
+  closing: string;
+}
+
 export interface PillarText {
   kicker: string;
   title: string;
@@ -8,6 +22,12 @@ export interface PillarText {
   cards: [string, string][];
   /** alt text for image media */
   alt?: string;
+  /**
+   * How this pillar is actually delivered. Where it is absent the page falls back to the shared
+   * description, which is the same for every pillar - which is why four pillars read identically
+   * until their own method is written.
+   */
+  approach?: PillarApproach;
 }
 
 export const PILLAR_COPY: Record<string, Record<Lang, PillarText>> = {
@@ -81,7 +101,16 @@ export const PILLAR_COPY: Record<string, Record<Lang, PillarText>> = {
           'Performance Campaigns',
           'Paid campaigns focused on acquiring qualified customers, with clear ROI metrics.'
         ]
-      ]
+      ],
+      approach: {
+        steps: [
+          ['01', 'Diagnosis and target audience',
+           'We analyse your value proposition, identify your ideal customer profile and audit your current digital channels.'],
+          ['02', 'Strategy and content deployment', 'We design the architecture you need.'],
+          ['03', 'Measurement and optimisation', 'We monitor key metrics through dashboards.'],
+        ],
+        closing: 'Effective marketing does more than attract attention: it builds a predictable revenue stream and positions your brand.'
+      }
     },
     es: {
       kicker: 'Pilar 2',
@@ -104,7 +133,16 @@ export const PILLAR_COPY: Record<string, Record<Lang, PillarText>> = {
           'Campañas de Performance',
           'Campañas pagas enfocadas en adquirir clientes calificados, con métricas de ROI claras.'
         ]
-      ]
+      ],
+      approach: {
+        steps: [
+          ['01', 'Diagnóstico y público objetivo',
+           'Analizamos tu propuesta de valor, identificamos tu perfil de cliente ideal y auditamos tus canales digitales actuales.'],
+          ['02', 'Estrategia y despliegue de contenido', 'Diseñamos la arquitectura que necesitas.'],
+          ['03', 'Medición y optimización', 'Monitoreamos las métricas clave mediante dashboards.'],
+        ],
+        closing: 'El marketing efectivo no solo atrae atención: construye un flujo de ingresos predecible y posiciona tu marca.'
+      }
     }
   },
   process: {
@@ -130,7 +168,16 @@ export const PILLAR_COPY: Record<string, Record<Lang, PillarText>> = {
           'Governance models that support long-term stability and scalability.'
         ]
       ],
-      alt: 'Process review with a checklist'
+      alt: 'Process review with a checklist',
+      approach: {
+        steps: [
+          ['01', 'Mapping and diagnosis',
+           'We audit operational workflows and the roles matrix to identify bottlenecks, duplicated tasks and lost productivity.'],
+          ['02', 'Control and risk management design', 'We structure policies, key indicators and risk maps.'],
+          ['03', 'Reengineering and scalability', 'We redesign processes to integrate automation tools.'],
+        ],
+        closing: 'Strategy defines the direction of the company.'
+      }
     },
     es: {
       kicker: 'Pilar 3',
@@ -154,7 +201,16 @@ export const PILLAR_COPY: Record<string, Record<Lang, PillarText>> = {
           'Sostenibilidad Empresarial',
           'Modelos de gobierno que respaldan la estabilidad y la escalabilidad a largo plazo.'
         ]
-      ]
+      ],
+      approach: {
+        steps: [
+          ['01', 'Mapeo y diagnóstico',
+           'Auditamos los flujos de trabajo operativos y la matriz de roles para identificar cuellos de botella, duplicación de tareas y pérdidas de productividad.'],
+          ['02', 'Diseño de control y gestión de riesgos', 'Estructuramos políticas, indicadores clave y mapas de riesgo.'],
+          ['03', 'Reingeniería y escalabilidad', 'Rediseñamos los procesos para integrar herramientas de automatización.'],
+        ],
+        closing: 'La estrategia define el rumbo de la compañía.'
+      }
     }
   },
   ai: {
@@ -179,7 +235,16 @@ export const PILLAR_COPY: Record<string, Record<Lang, PillarText>> = {
           'Digital Training & Adoption',
           'Help teams adopt AI and a digital culture through training and guidance.'
         ]
-      ]
+      ],
+      approach: {
+        steps: [
+          ['01', 'Diagnosis', 'We map the manual and repetitive tasks.'],
+          ['02', 'Architecture, integration and AI agents',
+           'We define the best solution, whether that means building on the systems you already have or implementing the most cost-effective, service-oriented option for your company.'],
+          ['03', 'Governance and training', 'We train your teams so the change is adopted culturally, not just installed.'],
+        ],
+        closing: 'Artificial intelligence does not replace human vision: it strengthens it.'
+      }
     },
     es: {
       kicker: 'Pilar 4',
@@ -202,7 +267,16 @@ export const PILLAR_COPY: Record<string, Record<Lang, PillarText>> = {
           'Capacitación y Adopción Digital',
           'Ayudamos a los equipos a adoptar la IA y una cultura digital mediante capacitación y acompañamiento.'
         ]
-      ]
+      ],
+      approach: {
+        steps: [
+          ['01', 'Diagnóstico', 'Mapeamos las tareas manuales y repetitivas.'],
+          ['02', 'Arquitectura, integración y agentes de IA',
+           'Definimos la mejor solución, ya sea aprovechando los sistemas que ya tienes o implementando la opción más rentable y orientada al servicio para tu empresa.'],
+          ['03', 'Gobernanza y formación', 'Capacitamos a tus equipos para que el cambio se adopte culturalmente, no solo se instale.'],
+        ],
+        closing: 'La inteligencia artificial no reemplaza la visión humana: la fortalece.'
+      }
     }
   }
 };

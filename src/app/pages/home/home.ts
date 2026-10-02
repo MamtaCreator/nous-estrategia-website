@@ -31,7 +31,7 @@ export class Home {
   /** Service tiles reuse the pillar registry for slug / icon / colour; the first is the featured entry point. */
   protected readonly tiles = PILLARS.map((p) => ({ slug: p.slug, icon: p.icon, color: p.color, featured: p.num === 1 }));
 
-  protected readonly analyticsChips = [1, 2, 3, 4];
+  protected readonly analyticsChips = [1, 2, 3, 4, 5];
   protected readonly why = [
     { n: 1, color: BRAND.blue },
     { n: 2, color: BRAND.cyan },

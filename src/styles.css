@@ -1,7 +1,6 @@
-/* Global wireframe styles (shared by all components; .wrap.mobile drives the viewport simulator) */
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:84px}
-body{margin:0;background:#E4E3DF;color:#333A46;
+body{margin:0;background:#FFFFFF;color:#333A46;
  font-family:'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
 ul{margin:0;padding:0;list-style:none}
 h1,h2,h3,p{margin:0}
@@ -14,9 +13,8 @@ a{color:#182236;text-decoration:none}
 .seg button+button{border-left:1px solid rgba(255,255,255,.28)}
 .seg button[aria-pressed="true"]{background:#fff;color:#0C1220}
 
-.stage{padding:0 24px 40px;display:flex;justify-content:center}
-.wrap{width:100%;max-width:1440px;background:#FFFFFF;border:1px solid #E6E8EC;overflow:hidden;position:relative}
-.wrap.mobile{max-width:390px}
+.stage{padding:0}
+.wrap{width:100%;background:#FFFFFF;overflow:hidden;position:relative}
 
 .inner{max-width:1180px;margin:0 auto;padding:0 64px}
 .band{padding:128px 0;background:#FFFFFF}
@@ -74,7 +72,7 @@ a{color:#182236;text-decoration:none}
  justify-content:space-between;gap:32px}
 .hero .site-header,.pillar-hero ~ .site-header{background:transparent}
 .logo{display:flex;align-items:center}
-.logo-img{height:30px;width:auto;display:block}
+.logo-img{height:48px;width:auto;display:block}
 .logo-chip{display:inline-flex;align-items:center;background:#FFFFFF;border-radius:7px;padding:8px 12px;box-shadow:0 1px 2px rgba(0,0,0,.14)}
 .logo-chip .logo-img{height:24px}
 .nav{display:flex;gap:28px}
@@ -245,34 +243,6 @@ a{color:#182236;text-decoration:none}
 .foot-link:hover{color:#6EC6E0}
 .foot-rights{border-top:1px solid rgba(255,255,255,.12);padding-top:22px;margin-top:44px;font-size:12px}
 
-.wrap.mobile .inner{padding:0 20px}
-.wrap.mobile .band{padding:64px 0}
-.wrap.mobile .grid-2,.wrap.mobile .grid-4,.wrap.mobile .duo,.wrap.mobile .tile-grid,.wrap.mobile .rel-grid{grid-template-columns:minmax(0,1fr)}
-.wrap.mobile .duo{gap:32px}
-.wrap.mobile .duo-band{padding:64px 0}
-.wrap.mobile .duo-band.reverse .duo-copy{order:0}
-.wrap.mobile .h1{font-size:33px}
-.wrap.mobile .h1-pillar{font-size:30px}
-.wrap.mobile .h2{font-size:25px}
-.wrap.mobile .lede,.wrap.mobile .hero-sub{font-size:15px;max-width:none}
-.wrap.mobile .sec-head{margin-bottom:32px}
-.wrap.mobile .hero{min-height:0;padding:120px 0 56px}
-.wrap.mobile .hero-body{padding:0 20px}
-.wrap.mobile .pillar-hero{padding:120px 0 48px}
-.wrap.mobile .header-inner{padding:14px 20px;gap:12px}
-.wrap.mobile .nav,.wrap.mobile .header-actions .btn{display:none}
-.wrap.mobile .menu-btn{display:flex}
-.wrap.mobile .metrics-row{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:28px}
-.wrap.mobile .metric{padding-left:0;padding-top:0}
-.wrap.mobile .client-grid{grid-template-columns:1fr;gap:18px}
-.wrap.mobile .client-band,.wrap.mobile .metrics-band .inner{padding:0}
-.wrap.mobile .client-band{padding:44px 0}
-.wrap.mobile .ph-band{height:230px}
-.wrap.mobile .cta-band{padding:60px 0}
-.wrap.mobile .cta-grid{grid-template-columns:minmax(0,1fr);gap:36px}
-.wrap.mobile .diag-form{padding:24px}
-.wrap.mobile .foot-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
-.wrap.mobile .site-footer{padding:48px 0 28px}
 
 @media (max-width:900px){
 
@@ -290,7 +260,8 @@ a{color:#182236;text-decoration:none}
 .wrap .hero{min-height:0;padding:120px 0 56px}
 .wrap .hero-body{padding:0 20px}
 .wrap .pillar-hero{padding:120px 0 48px}
-.wrap .header-inner{padding:14px 20px;gap:12px}
+.wrap .header-inner{padding:12px 20px;gap:12px}
+.wrap .logo-img{height:38px}
 .wrap .nav,.wrap .header-actions .btn{display:none}
 .wrap .menu-btn{display:flex}
 .wrap .metrics-row{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:28px}
@@ -305,15 +276,12 @@ a{color:#182236;text-decoration:none}
 .wrap .foot-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
 .wrap .site-footer{padding:48px 0 28px}
 
-.stage{padding:0}
-.wrap{border:0}
 }
 
 /* Angular: hero components are wrapped in host elements (display:contents), so the wireframe's
    `.hero + .hero` sibling rule is restated on the hosts. */
 app-hero-video + app-hero-video .hero{margin-top:0;padding-top:0;border-top:1px solid rgba(255,255,255,.08)}
 
-/* mobile menu panel: hidden on desktop, opened by the hamburger in mobile view (.wrap.mobile or <=900px) */
 .mobile-panel{display:none;flex-direction:column;align-items:stretch;gap:4px;padding:8px 20px 20px;border-top:1px solid #E6E8EC;background:#fff}
 .mobile-link{padding:14px 0;font-size:14px;font-weight:600;letter-spacing:.03em;color:#333A46;border-bottom:1px solid #E6E8EC}
 .mobile-panel .btn{margin-top:14px}
@@ -321,14 +289,11 @@ app-hero-video + app-hero-video .hero{margin-top:0;padding-top:0;border-top:1px 
 .menu-btn.open span:nth-child(2){opacity:0}
 .menu-btn.open span:nth-child(3){transform:translateY(-5.4px) rotate(-45deg)}
 .menu-btn span{transition:transform .18s,opacity .18s}
-.wrap.mobile .mobile-panel.open{display:flex}
 @media (max-width:900px){
 .wrap .mobile-panel.open{display:flex}
 }
 
 .pillar-filters{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:20px 0}.pillar-filters label{display:flex;flex-direction:column;gap:6px;font-size:13px}.pillar-filters input,.pillar-filters select,.pillar-filters button{font:inherit;padding:9px 12px;border:1px solid #ccd5e3;border-radius:6px;background:white}.pillar-filters button{cursor:pointer}.crm-content{min-width:0}.crm-content table{max-width:100%}@media(max-width:700px){.crm-content .grid,.crm-content .cards{grid-template-columns:1fr!important}.crm-content .span-2{grid-column:auto!important}.crm-content .period-picker{flex-wrap:wrap}.crm-content table{display:block;overflow:auto}.crm-content .step-row{flex-wrap:wrap}}
-.view-inline{margin-left:4px;padding-left:14px;border-left:1px solid #E6E8EC}.wrap.mobile .view-inline{display:none}
-.view-panel{padding:14px 0 4px}.view-panel button{font-size:12px}
 .signin{font-weight:700;color:#2E74C9}
 
 /* ---------------------------------------------------------------------------
@@ -375,3 +340,13 @@ app-hero-video + app-hero-video .hero{margin-top:0;padding-top:0;border-top:1px 
   font-size: inherit;
   font-weight: inherit;
 }
+
+/* A pillar's method: numbered steps in the approach section. */
+.approach-steps{margin:22px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:20px;counter-reset:none}
+.approach-steps li{display:flex;gap:16px;align-items:flex-start}
+.approach-n{font-size:15px;font-weight:800;letter-spacing:.04em;line-height:1.5;flex:none;min-width:28px;
+ font-variant-numeric:tabular-nums}
+.approach-title{margin:0 0 4px;font-size:15px;font-weight:700;color:#182236;line-height:1.4}
+.approach-body{margin:0;font-size:14px;line-height:1.65;color:#5B6372}
+.approach-closing{margin:24px 0 0;padding-top:18px;border-top:1px solid #E6E8EC;font-size:15px;line-height:1.6;
+ color:#182236;font-weight:600;text-wrap:pretty}

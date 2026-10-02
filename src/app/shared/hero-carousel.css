@@ -30,12 +30,16 @@
 }
 .hc-copy .h1 {
   color: #fff;
+  /* Tighter than the site default of 1.22. A four-line headline at this size reads as four separate
+     statements when the leading is loose; closing it up makes it one. */
+  line-height: 1.1;
+  letter-spacing: -0.01em;
 }
 .hc-sub {
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.45;
   color: rgba(255, 255, 255, 0.78);
-  margin-top: 14px;
+  margin-top: 10px;
   text-wrap: pretty;
   font-weight: 500;
 }
@@ -45,10 +49,18 @@
 .hc-stage {
   position: relative;
   width: 100%;
-  max-width: 940px;
+  max-width: 1080px;
   height: 340px;
   /* The perspective is what turns the side slides away from the viewer rather than merely squashing them. */
   perspective: 1400px;
+}
+
+/* The cards get their own 3D layer. Inside a preserve-3d context the browser paints by position in
+   space and ignores z-index, so with the arrows in that same context a card rendered in front of them
+   and ate the click. Keeping the arrows outside it puts them reliably on top. */
+.hc-track {
+  position: absolute;
+  inset: 0;
   transform-style: preserve-3d;
 }
 
@@ -163,3 +175,59 @@
 @media (prefers-reduced-motion: reduce) {
   .hc-slide { transition: none; }
 }
+
+/* --- the card label ------------------------------------------------------ */
+
+/* Sits over the foot of the card so the film still reads behind it. */
+.hc-label,
+.hc-bring {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 16px 18px;
+  text-align: left;
+  text-decoration: none;
+  font: inherit;
+  border: 0;
+  cursor: pointer;
+  background: linear-gradient(to top, rgba(8, 13, 27, 0.92) 0%, rgba(8, 13, 27, 0.72) 60%, rgba(8, 13, 27, 0) 100%);
+}
+.hc-label-num {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+.hc-label-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.3;
+  flex: 1;
+}
+.hc-label-title.dim { color: rgba(255, 255, 255, 0.82); font-size: 13px; }
+.hc-label-more {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6ec6e0;
+  flex: none;
+}
+.hc-label:hover .hc-label-more { color: #fff; }
+.hc-label:focus-visible,
+.hc-bring:focus-visible { outline: 2px solid #6ec6e0; outline-offset: -3px; }
+
+@media (max-width: 900px) {
+  .hc-label, .hc-bring { padding: 12px 14px; gap: 8px; }
+  .hc-label-title { font-size: 13px; }
+  .hc-label-more { display: none; }
+}
+
+/* A card that is faded out takes no clicks, so it cannot intercept what is meant for a visible one. */
+.hc-slide.is-far { pointer-events: none; }
