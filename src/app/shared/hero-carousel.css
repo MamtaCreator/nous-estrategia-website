@@ -194,13 +194,22 @@
   display: flex;
   align-items: baseline;
   gap: 10px;
-  padding: 16px 18px;
+  padding: 14px 18px 16px;
   text-align: left;
   text-decoration: none;
   font: inherit;
   border: 0;
   cursor: pointer;
-  background: linear-gradient(to top, rgba(8, 13, 27, 0.92) 0%, rgba(8, 13, 27, 0.72) 60%, rgba(8, 13, 27, 0) 100%);
+  background: linear-gradient(to top, rgba(8, 13, 27, 0.95) 0%, rgba(8, 13, 27, 0.86) 45%, rgba(8, 13, 27, 0.55) 75%, rgba(8, 13, 27, 0) 100%);
+}
+/* Title row, then the summary beneath it. */
+.hc-label { flex-direction: column; align-items: stretch; gap: 5px; }
+.hc-label-head { display: flex; align-items: baseline; gap: 10px; }
+.hc-label-body {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.82);
+  text-wrap: pretty;
 }
 .hc-label-num {
   font-size: 12px;
@@ -230,9 +239,12 @@
 .hc-bring:focus-visible { outline: 2px solid #6ec6e0; outline-offset: -3px; }
 
 @media (max-width: 900px) {
-  .hc-label, .hc-bring { padding: 12px 14px; gap: 8px; }
+  .hc-label, .hc-bring { padding: 10px 12px 12px; gap: 4px; }
   .hc-label-title { font-size: 13px; }
   .hc-label-more { display: none; }
+  /* Two lines of summary on a 300px card would cover the film, so it goes.
+     The title and the link still say where the card leads. */
+  .hc-label-body { display: none; }
 }
 
 /* A card that is faded out takes no clicks, so it cannot intercept what is meant for a visible one. */

@@ -67,9 +67,14 @@ import { BrainMark } from './brain-mark';
                    a click on a half-turned card cannot navigate somewhere the person cannot properly see. -->
               @if (i === active()) {
                 <a class="hc-label" [routerLink]="['/', s.slug]">
-                  <span class="hc-label-num" [style.color]="s.color">{{ pad(s.num) }}</span>
-                  <span class="hc-label-title">{{ i18n.t('pillar.short.' + s.slug) }}</span>
-                  <span class="hc-label-more">{{ i18n.t('tiles.more') }}</span>
+                  <span class="hc-label-head">
+                    <span class="hc-label-num" [style.color]="s.color">{{ pad(s.num) }}</span>
+                    <span class="hc-label-title">{{ i18n.t('pillar.short.' + s.slug) }}</span>
+                    <span class="hc-label-more">{{ i18n.t('tiles.more') }}</span>
+                  </span>
+                  <!-- The same one-line summary the service tiles use further down the page, so a card
+                       says what the pillar actually does rather than only naming it. -->
+                  <span class="hc-label-body">{{ i18n.t('tiles.' + s.slug + '.body') }}</span>
                 </a>
               } @else {
                 <button type="button" class="hc-bring" (click)="go(i)"
