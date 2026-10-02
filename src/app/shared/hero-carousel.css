@@ -30,10 +30,13 @@
 }
 .hc-copy .h1 {
   color: #fff;
+  /* Smaller than the site-wide 44px. The hero line is long, and at full size it filled four lines and
+     crowded the cards below; it still sits above the 36px section headings, so the hierarchy holds. */
+  font-size: 38px;
   /* Tighter than the site default of 1.22. A four-line headline at this size reads as four separate
      statements when the leading is loose; closing it up makes it one. */
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  line-height: 1.14;
+  letter-spacing: -0.015em;
 }
 .hc-sub {
   font-size: 16px;
@@ -160,6 +163,8 @@
 
 @media (max-width: 900px) {
   .hc-body { padding: 0 20px; gap: 20px; }
+  .hc-copy .h1 { font-size: 30px; }
+  .hc-sub { font-size: 15px; }
   .hc-stage { height: 240px; }
   .hc-slide { width: 300px; margin-left: -150px; }
   .hc-arrow { width: 38px; height: 38px; font-size: 22px; }
@@ -167,6 +172,7 @@
 
 @media (max-width: 560px) {
   .hero-carousel { padding: 76px 0 48px; }
+  .hc-copy .h1 { font-size: 27px; }
   .hc-stage { height: 200px; }
   .hc-slide { width: 240px; margin-left: -120px; }
 }
