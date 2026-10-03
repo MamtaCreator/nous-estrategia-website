@@ -1,12 +1,11 @@
-<app-hero-carousel #heroCarousel />
+<app-hero-carousel />
 
 <section class="band duo-band" id="about">
   <div class="inner duo">
     <div class="duo-copy">
-      <p class="kicker"><a routerLink="/" fragment="about">{{ i18n.t('about.kicker') }}</a></p>
+      <p class="kicker"><a routerLink="/" fragment="top">{{ i18n.t('about.kicker') }}</a></p>
       <h2 class="h2">{{ i18n.t('about.title') }}</h2>
       <p class="lede">{{ i18n.t('about.lede') }}</p>
-      <p class="lede lede-sub">{{ i18n.t('about.sub') }}</p>
     </div>
     <div class="duo-media">
       <div class="img-real vid-real ph-band">
@@ -35,12 +34,12 @@
 <section class="band alt" id="services">
   <div class="inner">
     <div class="sec-head">
-      <p class="kicker"><a routerLink="/" fragment="services">{{ i18n.t('services.kicker') }}</a></p>
+      <p class="kicker"><a routerLink="/" fragment="top">{{ i18n.t('services.kicker') }}</a></p>
       <div class="sec-head-mark">
         <app-brain-mark [size]="46" />
         <h2 class="h2">{{ i18n.t('services.title') }}</h2>
       </div>
-      <p class="lede services-highlight"><strong>{{ i18n.t('services.lede') }}</strong></p>
+      <p class="lede">{{ i18n.t('services.lede') }}</p>
       <p class="lede lede-sub">{{ i18n.t('services.sub') }}</p>
       <div class="mini-badge-row">
         @for (t of tiles; track t.slug) {
@@ -52,8 +51,7 @@
     </div>
     <div class="tile-grid">
       @for (t of tiles; track t.slug) {
-        <a class="tile" [class.featured]="t.featured" [href]="t.slug" [id]="t.slug"
-           (click)="heroCarousel.revealPillar($event, t.slug)">
+        <a class="tile" [class.featured]="t.featured" [routerLink]="['/', t.slug]" [id]="t.slug">
           <span class="tile-icon" [style.color]="t.color"><app-icon [name]="t.icon" [size]="22" /></span>
           <span class="tile-label" [style.color]="t.color">{{ i18n.t('tiles.' + t.slug + '.label') }}</span>
           <span class="tile-title">{{ i18n.t('tiles.' + t.slug + '.title') }}</span>
@@ -68,7 +66,7 @@
 <section class="band duo-band reverse" id="tech">
   <div class="inner duo">
     <div class="duo-copy">
-      <p class="kicker"><a routerLink="/" fragment="tech">{{ i18n.t('tech.kicker') }}</a></p>
+      <p class="kicker"><a routerLink="/" fragment="top">{{ i18n.t('tech.kicker') }}</a></p>
       <h2 class="h2">{{ i18n.t('tech.title') }}</h2>
       <p class="lede">{{ i18n.t('tech.lede') }}</p>
     </div>
@@ -85,7 +83,7 @@
 <section class="band client-band" id="clients">
   <div class="inner">
     <div class="client-head">
-      <p class="kicker"><a routerLink="/" fragment="clients">{{ i18n.t('clients.kicker') }}</a></p>
+      <p class="kicker"><a routerLink="/" fragment="top">{{ i18n.t('clients.kicker') }}</a></p>
       <p class="client-note">{{ i18n.t('clients.note') }}</p>
     </div>
     <div class="client-grid">
@@ -101,7 +99,7 @@
 <section class="band alt" id="insight">
   <div class="inner duo stack">
     <div class="duo-copy">
-      <p class="kicker"><a routerLink="/" fragment="insight">{{ i18n.t('analytics.kicker') }}</a></p>
+      <p class="kicker"><a routerLink="/" fragment="top">{{ i18n.t('analytics.kicker') }}</a></p>
       <h2 class="h2">{{ i18n.t('analytics.title') }}</h2>
       <p class="lede">{{ i18n.t('analytics.lede') }}</p>
       <ul class="chip-list">
@@ -144,7 +142,7 @@
 <section class="band alt" id="method">
   <div class="inner">
     <div class="sec-head">
-      <p class="kicker"><a routerLink="/" fragment="method">{{ i18n.t('method.kicker') }}</a></p>
+      <p class="kicker"><a routerLink="/" fragment="top">{{ i18n.t('method.kicker') }}</a></p>
       <div class="sec-head-mark">
         <app-brain-mark [size]="46" />
         <h2 class="h2">{{ i18n.t('method.title') }}</h2>

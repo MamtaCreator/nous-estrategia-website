@@ -130,7 +130,6 @@ import { BrainMark } from './brain-mark';
   styleUrl: './hero-carousel.css',
 })
 export class HeroCarousel {
-  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly router = inject(Router);
   protected readonly i18n = inject(I18n);
 
@@ -225,22 +224,6 @@ export class HeroCarousel {
   protected go(index: number): void {
     const count = this.slides.length;
     this.active.set(((index % count) + count) % count);
-  }
-
-  /** Homepage service cards introduce the matching slide before opening its detail page. */
-  revealPillar(event: MouseEvent, slug: string): void {
-    // Preserve opening the detail link in a new tab and the non-JavaScript fallback.
-    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-    const index = this.slides.findIndex(slide => slide.slug === slug);
-    if (index < 0) return;
-    event.preventDefault();
-    this.go(index);
-    const carousel = this.host.nativeElement.querySelector<HTMLElement>('.hero-carousel');
-    carousel?.focus({ preventScroll: true });
-    carousel?.scrollIntoView({
-      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
-      block: 'start',
-    });
   }
 
   /**

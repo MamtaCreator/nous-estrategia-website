@@ -53,7 +53,16 @@ export const PILLAR_COPY: Record<string, Record<Lang, PillarText>> = {
           'External CFO — CFO as a Service',
           'Strategic planning, investment evaluation, committees and key decisions without a full-time internal CFO.'
         ]
-      ]
+      ],
+      approach: {
+        steps: [
+          ['01', 'Diagnosis and Integration', 'Assessment of value leakage.'],
+          ['02', 'Structuring and Control',
+           'We implement interactive dashboards and custom financial models.'],
+          ['03', 'Scalability', 'We support management in making high-impact strategic decisions.'],
+        ],
+        closing: 'We connect executive vision with operational execution to transform scattered data into profitable decisions.'
+      }
     },
     es: {
       kicker: 'Pilar 1',
@@ -76,7 +85,17 @@ export const PILLAR_COPY: Record<string, Record<Lang, PillarText>> = {
           'CFO Externo — CFO como Servicio',
           'Planeación estratégica, evaluación de inversiones, comités y decisiones clave sin necesidad de un CFO interno de tiempo completo.'
         ]
-      ]
+      ],
+      approach: {
+        steps: [
+          ['01', 'Diagnóstico e Integración', 'Evaluación de fugas de valor.'],
+          ['02', 'Estructuración y Control',
+           'Implementamos tableros interactivos y modelos financieros a la medida.'],
+          ['03', 'Escalabilidad',
+           'Acompañamos a la dirección en la toma de decisiones estratégicas de alto impacto.'],
+        ],
+        closing: 'Conectamos la visión ejecutiva con la ejecución operativa para transformar datos dispersos en decisiones rentables.'
+      }
     }
   },
   marketing: {

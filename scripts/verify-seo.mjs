@@ -38,6 +38,18 @@ for (const route of routes) {
 }
 assert.equal(titles.size, 5, 'Unique titles');
 assert.equal(descriptions.size, 5, 'Unique descriptions');
+// Each pillar states its own method. Without this a pillar left without one silently shows the shared
+// description, which reads identically on all four and says nothing specific about that service.
+const approaches = new Set();
+for (const route of routes.filter(Boolean)) {
+  const dom = new JSDOM(await readFile(`${root}/${route}/index.html`, 'utf8'));
+  const steps = [...dom.window.document.querySelectorAll('.approach-title, .approach-closing')].map(el => el.textContent.trim());
+  assert.ok(steps.length > 0, `${route}: no method steps`);
+  approaches.add(steps.join('|'));
+  dom.window.close();
+}
+assert.equal(approaches.size, 4, 'Each pillar describes its own method, not the shared fallback');
+
 const shell = new JSDOM(await readFile(`${root}/index.csr.html`, 'utf8'));
 assert.match(shell.window.document.querySelector('meta[name=robots]').content, /noindex/);
 shell.window.close();
@@ -86,7 +98,8 @@ if (process.argv.includes('--browser')) {
     await page.waitForFunction(() => document.title.startsWith('NOUS Estrategia |'));
     await page.locator('input[name=name]').fill('SEO Form Check');
     assert.equal(await page.locator('input[name=name]').inputValue(), 'SEO Form Check');
-    // Service cards first select the hero slide; only its main link opens the detail page.
+    // A service card opens that pillar's own page, at both widths and from the keyboard, rather than
+    // sending the reader back up to the carousel.
     await page.emulateMedia({ reducedMotion: 'reduce' });
     for (const width of [1366, 390]) {
       await page.setViewportSize({ width, height: 900 });
@@ -95,23 +108,12 @@ if (process.argv.includes('--browser')) {
         await tile.scrollIntoViewIfNeeded();
         if (slug === 'ai') { await tile.focus(); await page.keyboard.press('Enter'); }
         else await tile.click();
-        await page.waitForFunction(slug => document.querySelector('.hc-slide.is-active a')?.getAttribute('href') === '/' + slug, slug);
-        assert.equal(new URL(page.url()).pathname, '/', 'Tile stays on homepage');
-        await page.waitForFunction(() => {
-          const top = document.querySelector('.hero-carousel').getBoundingClientRect().top;
-          // Responsive header/font layout can shift the padded section slightly after scrolling.
-          return top >= -20 && top < 150;
-        }, null, { timeout: 5000 }).catch(async error => {
-          throw new Error(`Carousel scroll failed at ${width}px for ${slug}: ${await page.locator('.hero-carousel').evaluate(el => el.getBoundingClientRect().top)}; ${error.message}`);
-        });
-        assert.ok(await page.locator('.hero-carousel').evaluate(el => document.activeElement === el), 'Keyboard focus follows carousel');
-        await page.locator('.hc-slide.is-active a').click();
         await page.waitForURL(`**/${slug}`);
         await page.locator('.pillar-hero').waitFor();
         await page.goto(base + '/');
       }
     }
-    console.log('PASS: all four service cards select and reveal their carousel slide on desktop/mobile; Enter works and the slide opens its detail page.');
+    console.log('PASS: all four service cards open their own pillar page on desktop/mobile, by click and by Enter.');
     for (const route of ['login', 'register', 'workspace', 'app', 'home', 'missing-page']) {
       await page.goto(`${base}/${route}`);
       await page.waitForFunction(() => !document.querySelector('link[rel=canonical]'));

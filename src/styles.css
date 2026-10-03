@@ -46,9 +46,6 @@ a{color:#182236;text-decoration:none}
 .sec-head{margin-bottom:56px;max-width:720px}
 .sec-head-mark{display:flex;align-items:center;gap:14px}
 .sec-head-mark .h2{margin:0}
-.wrap .services-highlight{max-width:100%;padding:18px 20px;border-left:4px solid #2E74C9;
- border-radius:0 6px 6px 0;background:#EAF0F8;color:#182236;font-size:18px;line-height:1.65}
-.services-highlight strong{font-weight:600}
 .mini-badge-row{display:flex;gap:12px;margin-top:24px}
 .mini-badge{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
 .tick{width:38px;height:3px;border-radius:1px;background:linear-gradient(120deg,#2E74C9 0%,#4A4FA0 100%);margin-bottom:28px}
@@ -273,7 +270,6 @@ a{color:#182236;text-decoration:none}
 .wrap .h1-pillar{font-size:30px}
 .wrap .h2{font-size:25px}
 .wrap .lede,.wrap .hero-sub{font-size:15px;max-width:none}
-.wrap .services-highlight{font-size:16px;padding:16px}
 .wrap .sec-head{margin-bottom:32px}
 .wrap .hero{min-height:0;padding:120px 0 56px}
 .wrap .hero-body{padding:0 20px}
